@@ -130,6 +130,29 @@
   .sort-dir:hover{border-color:var(--steel);background:#F6F8FB}
   .sort-dir:active{transform:translateY(1px)}
 
+  /* ---------- Filtros por coluna (Excel-like) ---------- */
+  .colfilter{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-soft);border:1px solid var(--line);margin-bottom:18px;overflow:hidden}
+  .cf-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px;flex-wrap:wrap}
+  .cf-toggle{border:none;background:transparent;display:inline-flex;align-items:center;gap:9px;font-size:.86rem;font-weight:700;color:var(--navy-800);padding:2px 0}
+  .cf-toggle svg{width:16px;height:16px;color:var(--steel)}
+  .cf-chev{transition:transform .22s}
+  .cf-toggle.open .cf-chev{transform:rotate(180deg)}
+  .cf-count{background:var(--navy-800);color:#fff;border-radius:999px;font-size:.7rem;padding:1px 8px;font-weight:700;font-variant-numeric:tabular-nums}
+  .cf-actions{display:flex;gap:8px}
+  .cf-add,.cf-clear{border:1px solid var(--line-strong);background:#fff;border-radius:9px;padding:7px 13px;font-size:.8rem;font-weight:600;color:var(--navy-800);transition:.15s}
+  .cf-add{background:var(--navy-800);color:#fff;border-color:var(--navy-800)}
+  .cf-add:hover{background:var(--navy-700)}
+  .cf-clear:hover{border-color:var(--steel);background:#F6F8FB}
+  .cf-body{padding:2px 16px 15px;display:flex;flex-direction:column;gap:9px;animation:fade .25s ease}
+  .cf-row{display:grid;grid-template-columns:1.4fr 1.2fr 1fr auto;gap:8px;align-items:center}
+  .cf-row.has-2{grid-template-columns:1.4fr 1.2fr .9fr .9fr auto}
+  .cf-row select,.cf-row input{border:1px solid var(--line-strong);border-radius:9px;padding:9px 10px;font-size:.82rem;font-family:inherit;color:var(--navy-800);background:#fff;width:100%;font-weight:500}
+  .cf-row select:focus,.cf-row input:focus{outline:none;border-color:var(--navy-700);box-shadow:0 0 0 3px rgba(22,69,107,.12)}
+  .cf-del{border:1px solid var(--line-strong);background:#fff;border-radius:9px;width:36px;height:36px;display:grid;place-items:center;color:var(--crit);font-size:1rem;font-weight:700;flex:none;transition:.15s}
+  .cf-del:hover{background:var(--crit-bg);border-color:#f0c2bd}
+  .cf-empty{font-size:.8rem;color:var(--muted);padding:5px 2px;line-height:1.5}
+  .cf-empty b{color:var(--navy-800)}
+
   /* ---------- Table (desktop) ---------- */
   .table-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden}
   .tbl-desktop{overflow:visible}
@@ -295,6 +318,12 @@
     .sort-wrap select{flex:1;max-width:none}
     .status-pill{order:3}
     #refreshBtn,#cfgBtn{flex:1;justify-content:center}
+    .cf-head{gap:8px}
+    .cf-actions{width:100%}
+    .cf-add,.cf-clear{flex:1}
+    .cf-row,.cf-row.has-2{grid-template-columns:1fr 1fr}
+    .cf-row select:first-child{grid-column:1 / -1}
+    .cf-del{grid-column:2;justify-self:end}
   }
   @media (max-width:430px){
     .kpis{grid-template-columns:1fr 1fr;gap:11px}
@@ -399,6 +428,22 @@
       </select>
       <button class="sort-dir" id="sortDirBtn" title="Inverter a ordem">↓ maior</button>
     </div>
+  </section>
+
+  <section class="colfilter" id="colFilter">
+    <div class="cf-head">
+      <button class="cf-toggle" id="cfToggle" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg>
+        Filtros por coluna
+        <span class="cf-count" id="cfCount" style="display:none"></span>
+        <svg class="cf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="cf-actions" id="cfActions" style="display:none">
+        <button class="cf-add" id="cfAdd">+ Adicionar filtro</button>
+        <button class="cf-clear" id="cfClear">Limpar</button>
+      </div>
+    </div>
+    <div class="cf-body" id="cfBody" style="display:none"></div>
   </section>
 
   <section class="table-card">
@@ -511,6 +556,8 @@
 
 /* ============ Configuração padrão ============ */
 const DEFAULT_URL1 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2ZPsbxdrJSXeZ932d12WMRpi1yNRVx7cFXlbfEIbHSENwAhOO4K-R_KOACJBNd1WUFsamM89xPNJT/pub?output=csv";
+// Aba "Página2" — exportação CSV via gviz (funciona com a planilha compartilhada como "qualquer pessoa com o link pode ver")
+const DEFAULT_URL2 = "https://docs.google.com/spreadsheets/d/1osxV4f9-sPHqsAJIBfO0nVECIA_Wv24z9Cin6yYsCCw/gviz/tq?tqx=out:csv&gid=1685035984";
 
 const FIELDS = [
   {key:"codigo",    label:"Código",                   kw:["codigo","cod"]},
@@ -524,7 +571,7 @@ const FIELDS = [
 ];
 
 const cfg = {
-  url1: DEFAULT_URL1, url2:"",
+  url1: DEFAULT_URL1, url2: DEFAULT_URL2,
   dias:22, alvo:30, crit:5,
   hideReservaZero:true,   // reserva 0 -> não exibe
   hideEstoqueMenor:true,  // estoque < reserva -> não exibe
@@ -545,6 +592,24 @@ let searchTerm = "";
 let sortKey = "prioridade";
 let sortDir = "desc";
 let lastHeaders = [];
+
+/* ---- Filtros por coluna (estilo Excel) ---- */
+const COLFILTERS = [
+  {key:"estoque",   label:"Estoque disp.",      type:"num"},
+  {key:"reserva",   label:"Reserva p/ venda",   type:"num"},
+  {key:"mediaMes",  label:"Média mês",          type:"num"},
+  {key:"mediaDia",  label:"Média/dia",          type:"num"},
+  {key:"cobertura", label:"Cobertura (dias)",   type:"num"},
+  {key:"ratio",     label:"Saída × média",      type:"num"},
+  {key:"sug",       label:"Sugestão de compra", type:"num"},
+  {key:"codigo",    label:"Código",             type:"text"},
+  {key:"referencia",label:"Referência",         type:"text"},
+  {key:"produto",   label:"Produto",            type:"text"},
+  {key:"endereco",  label:"Endereço",           type:"text"},
+];
+const OPS_NUM=[["gte","≥ maior ou igual"],["gt","> maior que"],["lte","≤ menor ou igual"],["lt","< menor que"],["eq","= igual a"],["between","está entre"]];
+const OPS_TXT=[["contains","contém"],["eq","é igual a"]];
+let colConds=[];   // {col, op, v1, v2}
 
 /* ============ Utilidades ============ */
 function norm(s){return (s==null?"":String(s)).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
@@ -797,8 +862,11 @@ const TEXT_KEYS=["produto","endereco","referencia"];
 
 function visibleItems(){
   let arr=ITEMS.slice();
-  if(activeFilter==="acima") arr=arr.filter(i=>i.status==="alerta"||i.status==="critico");
-  else if(activeFilter==="critico") arr=arr.filter(i=>i.status==="critico");
+  // Duas análises DIFERENTES:
+  //  • "acima"  = demanda: a reserva do dia superou a média/dia (está saindo mais rápido), independente do estoque
+  //  • "critico"= risco de ruptura: a cobertura (dias que o estoque livre ainda dura) está abaixo do limite
+  if(activeFilter==="acima") arr=arr.filter(i=>i.acima);
+  else if(activeFilter==="critico") arr=arr.filter(i=>i.mediaDia>0 && i.cobertura<cfg.crit);
   else if(activeFilter==="ok") arr=arr.filter(i=>i.status==="ok");
   if(searchTerm){
     const t=norm(searchTerm);
@@ -809,8 +877,14 @@ function visibleItems(){
       return norm(i.produto).includes(t)||norm(i.referencia).includes(t)||norm(i.codigo).includes(t)||norm(i.endereco).includes(t);
     });
   }
+  // filtros por coluna (combinados em E, como o filtro de uma planilha)
+  const conds=colConds.filter(activeCond);
+  if(conds.length) arr=arr.filter(it=>conds.every(c=>matchCond(it,c)));
   arr.sort((a,b)=>{
     if(sortKey==="prioridade"){
+      // cada lente é ordenada pela sua própria urgência
+      if(activeFilter==="acima")   return (isFinite(b.ratio)?b.ratio:1e12)-(isFinite(a.ratio)?a.ratio:1e12);
+      if(activeFilter==="critico") return (isFinite(a.cobertura)?a.cobertura:1e12)-(isFinite(b.cobertura)?b.cobertura:1e12);
       const s=severity(b.status)-severity(a.status);
       if(s) return s;
       return (isFinite(b.ratio)?b.ratio:1e12)-(isFinite(a.ratio)?a.ratio:1e12);
@@ -826,6 +900,39 @@ function visibleItems(){
     return sortDir==="desc" ? -res : res;
   });
   return arr;
+}
+
+/* match de um filtro de coluna contra um item */
+function activeCond(c){
+  const meta=COLFILTERS.find(f=>f.key===c.col); if(!meta) return false;
+  if(meta.type==="text") return String(c.v1||"").trim()!=="";
+  if(c.op==="between")    return String(c.v1||"").trim()!=="" && String(c.v2||"").trim()!=="";
+  return String(c.v1||"").trim()!=="";
+}
+function matchCond(it,c){
+  const meta=COLFILTERS.find(f=>f.key===c.col); if(!meta) return true;
+  if(meta.type==="text"){
+    const hay=norm(it[c.col]), needle=norm(c.v1);
+    if(!needle) return true;
+    return c.op==="eq" ? hay===needle : hay.includes(needle);
+  }
+  if(String(c.v1).trim()==="") return true;
+  let val=Number(it[c.col]);
+  if(val===Infinity) val=1e12; else if(!isFinite(val)) val=0;
+  const a=parseNum(c.v1);
+  switch(c.op){
+    case "gt":  return val> a;
+    case "gte": return val>=a;
+    case "lt":  return val< a;
+    case "lte": return val<=a;
+    case "eq":  return Math.round(val)===Math.round(a);
+    case "between":{
+      if(String(c.v2).trim()==="") return true;
+      const b=parseNum(c.v2), lo=Math.min(a,b), hi=Math.max(a,b);
+      return val>=lo && val<=hi;
+    }
+  }
+  return true;
 }
 
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
@@ -899,8 +1006,8 @@ function animateCount(el,target){
 }
 
 function renderKPIs(){
-  const acima=ITEMS.filter(i=>i.status==="alerta"||i.status==="critico").length;
-  const crit=ITEMS.filter(i=>i.status==="critico").length;
+  const acima=ITEMS.filter(i=>i.acima).length;
+  const crit=ITEMS.filter(i=>i.mediaDia>0 && i.cobertura<cfg.crit).length;
   const ok=ITEMS.filter(i=>i.status==="ok").length;
   animateCount(document.getElementById("kpiTotal"),ITEMS.length);
   animateCount(document.getElementById("kpiAlert"),acima);
@@ -1076,6 +1183,8 @@ function closeDrawer(){document.getElementById("drawer").classList.remove("open"
 function saveCfg(){try{localStorage.setItem("painelAbastCfg",JSON.stringify(cfg));}catch(e){}}
 function loadCfg(){
   try{const s=localStorage.getItem("painelAbastCfg");if(s)Object.assign(cfg,JSON.parse(s));}catch(e){}
+  if(!cfg.url1) cfg.url1=DEFAULT_URL1;
+  if(!cfg.url2) cfg.url2=DEFAULT_URL2;   // aplica a Página2 padrão mesmo em config salva antiga
   document.getElementById("cfgUrl1").value=cfg.url1||"";
   document.getElementById("cfgUrl2").value=cfg.url2||"";
   document.getElementById("cfgDias").value=cfg.dias;
@@ -1083,6 +1192,42 @@ function loadCfg(){
   document.getElementById("cfgCrit").value=cfg.crit;
   document.getElementById("cfgHideRes").checked=cfg.hideReservaZero!==false;
   document.getElementById("cfgHideEst").checked=cfg.hideEstoqueMenor!==false;
+}
+
+/* ============ Filtros por coluna (UI) ============ */
+function colOptions(sel){return COLFILTERS.map(f=>`<option value="${f.key}" ${f.key===sel?"selected":""}>${f.label}</option>`).join("");}
+function opOptions(type,sel){return (type==="text"?OPS_TXT:OPS_NUM).map(o=>`<option value="${o[0]}" ${o[0]===sel?"selected":""}>${o[1]}</option>`).join("");}
+function updateCfCount(){
+  const cnt=colConds.filter(activeCond).length;
+  const el=document.getElementById("cfCount");
+  el.textContent=cnt||""; el.style.display=cnt?"":"none";
+}
+function renderColFilter(){
+  const body=document.getElementById("cfBody");
+  if(!colConds.length){
+    body.innerHTML='<div class="cf-empty">Nenhum filtro ativo. Clique em <b>+ Adicionar filtro</b> para filtrar por uma coluna — ex.: <b>Reserva ≥ 10</b>, <b>Estoque está entre 0 e 50</b>, <b>Produto contém "cabo"</b>. Vários filtros valem ao mesmo tempo (E).</div>';
+  }else{
+    body.innerHTML=colConds.map((c,idx)=>{
+      const meta=COLFILTERS.find(f=>f.key===c.col)||COLFILTERS[0];
+      const between=meta.type!=="text"&&c.op==="between";
+      const isText=meta.type==="text";
+      const v2 = between ? `<input type="text" inputmode="decimal" placeholder="até" value="${esc(c.v2||"")}" data-i="${idx}" data-fld="v2">` : "";
+      return `<div class="cf-row ${between?"has-2":""}">
+        <select data-i="${idx}" data-fld="col">${colOptions(c.col)}</select>
+        <select data-i="${idx}" data-fld="op">${opOptions(meta.type,c.op)}</select>
+        <input type="text" inputmode="${isText?"text":"decimal"}" placeholder="${between?"de":(isText?"texto":"valor")}" value="${esc(c.v1||"")}" data-i="${idx}" data-fld="v1">
+        ${v2}
+        <button class="cf-del" data-del="${idx}" title="Remover filtro" aria-label="Remover filtro">&times;</button>
+      </div>`;
+    }).join("");
+  }
+  updateCfCount();
+}
+function setColFilterOpen(open){
+  document.getElementById("cfBody").style.display=open?"flex":"none";
+  document.getElementById("cfActions").style.display=open?"flex":"none";
+  const t=document.getElementById("cfToggle");
+  t.classList.toggle("open",open); t.setAttribute("aria-expanded",open?"true":"false");
 }
 
 /* ============ Eventos ============ */
@@ -1117,6 +1262,40 @@ document.getElementById("filters").addEventListener("click",e=>{
   document.querySelectorAll("#filters .chip").forEach(x=>x.classList.remove("active"));
   b.classList.add("active"); activeFilter=b.dataset.f; renderTable();
 });
+
+/* --- filtros por coluna --- */
+document.getElementById("cfToggle").addEventListener("click",()=>{
+  setColFilterOpen(document.getElementById("cfBody").style.display==="none");
+});
+document.getElementById("cfAdd").addEventListener("click",()=>{
+  colConds.push({col:"reserva",op:"gte",v1:"",v2:""});
+  renderColFilter();
+});
+document.getElementById("cfClear").addEventListener("click",()=>{
+  colConds=[]; renderColFilter(); renderTable();
+});
+document.getElementById("cfBody").addEventListener("input",e=>{
+  const el=e.target; if(el.dataset.i==null) return;
+  const i=+el.dataset.i, fld=el.dataset.fld;
+  if(!colConds[i]) return;
+  colConds[i][fld]=el.value;
+  if(fld==="col"){
+    const meta=COLFILTERS.find(f=>f.key===el.value);
+    const valid=(meta.type==="text"?OPS_TXT:OPS_NUM).map(o=>o[0]);
+    if(!valid.includes(colConds[i].op)) colConds[i].op=valid[0];
+    renderColFilter();          // muda o tipo -> reconstrói (operadores diferentes)
+  }else if(fld==="op"){
+    renderColFilter();          // "entre" adiciona/remove o 2º campo
+  }else{
+    updateCfCount();            // digitando valor: mantém o foco, só atualiza contador
+  }
+  renderTable();
+});
+document.getElementById("cfBody").addEventListener("click",e=>{
+  const d=e.target.closest("[data-del]"); if(!d) return;
+  colConds.splice(+d.dataset.del,1); renderColFilter(); renderTable();
+});
+renderColFilter();
 
 function updateSortDirBtn(){
   const btn=document.getElementById("sortDirBtn");
