@@ -847,6 +847,7 @@ function buildSnooze(rows){
   // Página2: col código (A) + uma coluna de data do próximo lembrete (C).
   // colCod vem do cabeçalho; a coluna de data é detectada pela frequência de datas válidas.
   const map={};
+  const list=[];   // lembretes futuros: {codigo, date}
   SNOOZE_TOTAL=0;
   const today=dayOnly(new Date());
   let hdr=-1, colCod=0;
@@ -877,10 +878,12 @@ function buildSnooze(rows){
     if(!d){ for(let c=row.length-1;c>=0;c--){ if(c===colCod) continue; const dd=parseDate(row[c]); if(dd){d=dd;break;} } }
     if(d && dayOnly(d)>today){
       SNOOZE_TOTAL++;
-      codeKeys(cod).forEach(k=> map[k]=dayOnly(d));
+      const dd=dayOnly(d);
+      codeKeys(cod).forEach(k=> map[k]=dd);
+      list.push({codigo:cod, date:dd});
     }
   }
-  return map;
+  return {map, list};
 }
 
 function compute(items){
@@ -915,16 +918,20 @@ function applyBusinessRules(items){
   });
 }
 
-function applySnooze(items,snooze){
-  SNOOZED=0; SNOOZED_LIST=[];
-  return items.filter(it=>{
-    const k=codeKeys(it.codigo).find(k=>snooze[k]);
-    if(k){
-      SNOOZED++;
-      SNOOZED_LIST.push({codigo:it.codigo,produto:it.produto,referencia:it.referencia,endereco:it.endereco,date:snooze[k]});
-      return false;
-    }
-    return true;
+function removeSnoozed(items,map){
+  // remove da ANÁLISE os itens com lembrete futuro (para não aparecerem na tabela)
+  return items.filter(it=> !codeKeys(it.codigo).some(k=>map[k]));
+}
+function buildSnoozedList(rawItems,list){
+  // conta/lista os adiados a partir da Página2 (independente das regras de exibição),
+  // enriquecendo com produto/ref/endereço quando o código existe na análise.
+  SNOOZED=list.length;
+  const byKey={};
+  rawItems.forEach(it=>{ codeKeys(it.codigo).forEach(k=>{ if(byKey[k]==null) byKey[k]=it; }); });
+  SNOOZED_LIST=list.map(r=>{
+    let it=null;
+    for(const k of codeKeys(r.codigo)){ if(byKey[k]){ it=byKey[k]; break; } }
+    return {codigo:r.codigo, produto:it?it.produto:"", referencia:it?it.referencia:"", endereco:it?it.endereco:"", date:r.date, found:!!it};
   });
 }
 
@@ -1188,14 +1195,15 @@ async function refresh(){
     RAW=buildItems(rows);
     if(!RAW.length) throw new Error("EMPTY");
 
-    let snooze={};
+    let sn={map:{},list:[]};
     P2_LOADED=false; P2_ERROR=false; SNOOZE_TOTAL=0;
     if(cfg.url2){
-      try{ snooze=buildSnooze(await fetchCSV(cfg.url2)); P2_LOADED=true; }
+      try{ sn=buildSnooze(await fetchCSV(cfg.url2)); P2_LOADED=true; }
       catch(e){ P2_ERROR=true; }
     }
     const all=applyBusinessRules(compute(RAW));
-    ITEMS=applySnooze(all,snooze);
+    ITEMS=removeSnoozed(all,sn.map);
+    buildSnoozedList(RAW,sn.list);
     renderKPIs(); renderTable();
     stamp(true);
     setConn("Conectado",true);
@@ -1257,9 +1265,10 @@ function loadDemo(silent){
     ["1009","Recontagem",minus(3)],           // passado -> aparece
     ["1003","OK",""]                          // vazio -> aparece
   ];
-  const snooze=buildSnooze(snoozeRows);
+  const sn=buildSnooze(snoozeRows);
   P2_LOADED=true; P2_ERROR=false;
-  ITEMS=applySnooze(applyBusinessRules(compute(RAW)),snooze);
+  ITEMS=removeSnoozed(applyBusinessRules(compute(RAW)),sn.map);
+  buildSnoozedList(RAW,sn.list);
   renderKPIs(); renderTable(); stamp(true);
   setConn("Dados de exemplo",false);
   if(!silent) showBanner("warn","Exibindo <b>dados de exemplo</b>. Configure o link da sua planilha para ver os números reais.");
@@ -1305,10 +1314,12 @@ function renderSnoozeModal(){
     const ref=[]; 
     if(s.referencia) ref.push(esc(s.referencia));
     if(s.endereco)   ref.push(`<span class="pin">${PIN}${esc(s.endereco)}</span>`);
+    const prod = s.found ? (esc(s.produto)||"&mdash;")
+                         : '<span style="color:var(--muted-2);font-style:italic;font-weight:500">não localizado na aba de estoque</span>';
     return `<div class="sn-item ${cls}">
       <div class="sn-main">
         <div class="sn-cod">#${esc(s.codigo)||"—"}</div>
-        <div class="sn-prod">${esc(s.produto)||"—"}</div>
+        <div class="sn-prod">${prod}</div>
         <div class="sn-ref">${ref.join(" &middot; ")||"&mdash;"}</div>
       </div>
       <div class="sn-date">
