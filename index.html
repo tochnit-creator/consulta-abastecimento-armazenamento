@@ -123,18 +123,18 @@
   .chip .cnt{font-size:.72rem;background:rgba(0,0,0,.08);border-radius:999px;padding:1px 7px}
   .chip.active .cnt{background:rgba(255,255,255,.22)}
 
-  /* ---------- Table ---------- */
+  /* ---------- Table (desktop) ---------- */
   .table-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden}
-  .table-scroll{overflow-x:auto}
-  table{width:100%;border-collapse:collapse;min-width:980px}
+  .tbl-desktop{overflow:visible}
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
   thead th{
-    background:#F4F7FA;text-align:left;font-size:.72rem;font-weight:700;color:var(--steel);
-    text-transform:uppercase;letter-spacing:.045em;padding:13px 14px;border-bottom:2px solid var(--line-strong);
-    white-space:nowrap;position:sticky;top:0;
+    background:#F4F7FA;text-align:left;font-size:.65rem;font-weight:700;color:var(--steel);
+    text-transform:uppercase;letter-spacing:.02em;padding:11px 8px;border-bottom:2px solid var(--line-strong);
+    position:sticky;top:0;line-height:1.2;
   }
-  thead th .th-in{display:inline-flex;align-items:center;gap:6px}
+  thead th .th-in{display:inline-flex;align-items:flex-start;gap:4px}
   th.num,td.num{text-align:right}
-  tbody td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:.88rem;vertical-align:middle}
+  tbody td{padding:9px 8px;border-bottom:1px solid var(--line);font-size:.8rem;vertical-align:middle;overflow:hidden}
   tbody tr{transition:background .12s}
   tbody tr:hover{background:#F7FAFD}
   tbody tr:last-child td{border-bottom:none}
@@ -142,10 +142,37 @@
   @keyframes rowIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
   @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   @keyframes fade{from{opacity:0}to{opacity:1}}
+  /* larguras fixas p/ caber tudo em uma tela */
+  col.c-sit{width:8.5%}col.c-cod{width:5%}col.c-ref{width:8%}col.c-addr{width:7%}
+  col.c-prod{width:auto}col.c-est{width:5.5%}col.c-res{width:6%}col.c-mm{width:5.5%}
+  col.c-md{width:6%}col.c-term{width:9.5%}col.c-cob{width:6.5%}col.c-sug{width:9.5%}
 
   .cod{font-weight:700;color:var(--navy-800);font-variant-numeric:tabular-nums}
-  .ref{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
-  .prod{font-weight:500;max-width:280px}
+  .ref{font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+  .addr{font-size:.74rem;font-weight:600;color:var(--navy-700);display:inline-flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .addr svg{width:11px;height:11px;color:var(--gold);flex:none}
+  .prod{font-weight:500;line-height:1.3}
+
+  /* ---------- Cards (mobile) ---------- */
+  .cards-mobile{display:none;flex-direction:column;gap:11px;padding:13px}
+  .mcard{background:#fff;border:1px solid var(--line);border-left:4px solid var(--steel);border-radius:12px;padding:13px 14px;box-shadow:var(--shadow-soft);animation:rowIn .4s both}
+  .mcard.mc-critico{border-left-color:var(--crit)}
+  .mcard.mc-alerta{border-left-color:var(--warn)}
+  .mcard.mc-ok{border-left-color:var(--ok)}
+  .mc-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:7px}
+  .mc-cod{font-weight:700;color:var(--navy-800);font-variant-numeric:tabular-nums}
+  .mc-addr{margin-left:auto;font-size:.76rem;font-weight:600;color:var(--navy-700);display:inline-flex;align-items:center;gap:4px}
+  .mc-addr svg{width:12px;height:12px;color:var(--gold)}
+  .mc-prod{font-weight:600;font-size:.94rem;line-height:1.3}
+  .mc-ref{font-size:.78rem;color:var(--muted);margin-top:1px}
+  .mc-thermo{margin:11px 0 9px}
+  .mc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;border-top:1px solid var(--line);padding-top:10px}
+  .mc-grid > div{display:flex;flex-direction:column;gap:2px}
+  .mc-grid span{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;font-weight:600}
+  .mc-grid b{font-size:.92rem;font-variant-numeric:tabular-nums}
+  .mc-sug{margin-top:10px;background:var(--crit-bg);color:var(--crit);border-radius:9px;padding:8px 11px;font-size:.84rem;font-weight:700;display:flex;align-items:center;gap:7px}
+  .mc-sug svg{width:15px;height:15px}
+  .mc-sug span{font-weight:500;color:#9a3a33;font-size:.76rem}
   .badge{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;padding:4px 9px;border-radius:7px;white-space:nowrap}
   .b-crit{background:var(--crit-bg);color:var(--crit)}
   .b-alert{background:var(--warn-bg);color:var(--warn)}
@@ -154,11 +181,11 @@
   .badge svg{width:12px;height:12px}
 
   /* termometro */
-  .thermo{display:flex;align-items:center;gap:9px;min-width:150px}
-  .thermo .track{position:relative;flex:1;height:8px;border-radius:6px;background:#E9EEF4;overflow:hidden}
+  .thermo{display:flex;align-items:center;gap:6px;min-width:0}
+  .thermo .track{position:relative;flex:1;height:7px;border-radius:6px;background:#E9EEF4;overflow:hidden;min-width:34px}
   .thermo .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;width:0;transition:width .9s cubic-bezier(.2,.8,.25,1)}
   .thermo .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:#fff;box-shadow:0 0 0 1px #B9C6D4}
-  .thermo .ratio{font-size:.78rem;font-weight:700;font-variant-numeric:tabular-nums;min-width:42px;text-align:right}
+  .thermo .ratio{font-size:.74rem;font-weight:700;font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
   .f-crit{background:linear-gradient(90deg,#e0635b,var(--crit))}
   .f-alert{background:linear-gradient(90deg,#e9a23c,var(--warn))}
   .f-ok{background:linear-gradient(90deg,#3fae80,var(--ok))}
@@ -212,19 +239,49 @@
   .sec-title:first-child{margin-top:0}
   .map-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:center;margin-bottom:9px}
   .map-row span{font-size:.8rem;color:var(--navy-800);font-weight:600}
+  .toggle{display:flex;align-items:flex-start;gap:11px;cursor:pointer;margin-bottom:13px;user-select:none}
+  .toggle input{position:absolute;opacity:0;pointer-events:none}
+  .toggle > span{flex:none;width:40px;height:23px;border-radius:999px;background:var(--line-strong);position:relative;transition:.2s;margin-top:1px}
+  .toggle > span::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s}
+  .toggle input:checked + span{background:var(--ok)}
+  .toggle input:checked + span::after{transform:translateX(17px)}
+  .toggle input:focus-visible + span{box-shadow:0 0 0 3px rgba(22,69,107,.25)}
+  .toggle div b{display:block;font-size:.84rem;color:var(--navy-800);font-weight:600}
+  .toggle div small{display:block;font-size:.74rem;color:var(--muted);line-height:1.4;margin-top:2px}
   .drawer-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;gap:10px}
   .drawer-foot .btn{flex:1;justify-content:center}
   .btn-save{background:var(--navy-800);color:#fff}.btn-save:hover{background:var(--navy-700)}
   .btn-demo{background:#EDF1F6;color:var(--navy-800)}.btn-demo:hover{background:#e2e8f0}
 
+  .rule-note{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);margin:14px 2px 0;background:#F4F7FA;border:1px solid var(--line);border-radius:10px;padding:9px 13px}
+  .rule-note b{color:var(--navy-800)}
   .updated{font-size:.78rem;color:var(--muted);margin:14px 2px 0;display:flex;align-items:center;gap:8px}
 
   footer{text-align:center;color:var(--muted-2);font-size:.76rem;padding:10px 0 0}
 
-  @media (max-width:880px){
+  @media (max-width:1200px){
+    thead th{font-size:.6rem;padding:10px 6px}
+    tbody td{padding:8px 6px;font-size:.76rem}
+    .emb-tag{padding:2px 5px;font-size:.68rem}
+  }
+  @media (max-width:820px){
     .kpis{grid-template-columns:repeat(2,1fr)}
-    main{padding:18px 14px 50px}
+    main{padding:18px 13px 50px}
     header{padding:14px 16px}
+    .brand h1{font-size:1.05rem}
+    .tbl-desktop{display:none}
+    .cards-mobile{display:flex}
+    .controls{flex-direction:column;align-items:stretch;gap:11px}
+    .seg{justify-content:space-between}
+    .chip-row{justify-content:space-between}
+    .chip{flex:1;justify-content:center;padding:8px 6px;font-size:.76rem}
+    .status-pill{order:3}
+    #refreshBtn,#cfgBtn{flex:1;justify-content:center}
+  }
+  @media (max-width:430px){
+    .kpis{grid-template-columns:1fr 1fr;gap:11px}
+    .kpi .val{font-size:1.7rem}
+    .mc-grid{grid-template-columns:repeat(2,1fr);gap:9px 6px}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important}
@@ -310,13 +367,20 @@
   </section>
 
   <section class="table-card">
-    <div class="table-scroll">
+    <div class="tbl-desktop">
       <table>
+        <colgroup>
+          <col class="c-sit"><col class="c-cod"><col class="c-ref"><col class="c-addr">
+          <col class="c-prod"><col class="c-est"><col class="c-res"><col class="c-mm">
+          <col class="c-md"><col class="c-term"><col class="c-cob"><col class="c-sug">
+        </colgroup>
         <thead>
           <tr>
             <th>Situação</th>
             <th>Código</th>
             <th>Referência</th>
+            <th><span class="th-in">Endereço
+              <span class="info" tabindex="0">i<span class="tip">Endereço do produto no armazém (coluna <b>Armazenamento PPP</b>) &mdash; onde encontrar o item para separação ou reposição.</span></span></span></th>
             <th>Produto</th>
             <th class="num">Estoque<br>disp.</th>
             <th class="num">Reserva<br>p/ venda</th>
@@ -334,11 +398,17 @@
         <tbody id="tbody"></tbody>
       </table>
     </div>
+    <div class="cards-mobile" id="cards"></div>
     <div class="empty" id="emptyState">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3h18v4H3z"/><path d="M5 7v13h14V7"/><path d="M9 11h6"/></svg>
       <div>Nenhum item carregado ainda. Clique em <b>Atualizar</b> ou abra <b>Config</b> para conectar sua planilha.</div>
     </div>
   </section>
+
+  <div class="rule-note" id="ruleNote" style="display:none">
+    <span class="info" tabindex="0">i<span class="tip">Para manter o painel acionável, ocultamos itens <b>sem reserva</b> (nada saindo) e itens cujo <b>estoque é menor que a reserva</b> (não dá para repor o que já está faltando). Isso pode ser desligado em Config.</span></span>
+    <span id="ruleNoteTxt"></span>
+  </div>
 
   <div class="updated" id="updatedTxt"></div>
   <footer>Painel gerado para a planilha "Armazenamento 1.0" &middot; abas <b>analise estoque</b> + <b>Página2</b></footer>
@@ -380,6 +450,12 @@
       <input type="number" id="cfgCrit" min="0" max="60" value="5">
     </div>
 
+    <div class="sec-title">Regras de exibição</div>
+    <label class="toggle"><input type="checkbox" id="cfgHideRes" checked><span></span>
+      <div><b>Ocultar itens com reserva = 0</b><small>Sem demanda reservada, fora do painel.</small></div></label>
+    <label class="toggle"><input type="checkbox" id="cfgHideEst" checked><span></span>
+      <div><b>Ocultar quando estoque &lt; reserva</b><small>Não dá para repor o que já está faltando (ex.: estoque 1, reserva 339).</small></div></label>
+
     <div class="sec-title">Ajuste de colunas <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(auto)</span></div>
     <div class="hint" style="margin-bottom:12px">Detectado automaticamente pelos cabeçalhos. Só mexa se algum campo vier errado.</div>
     <div id="mapBox"></div>
@@ -397,24 +473,29 @@
 const DEFAULT_URL1 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2ZPsbxdrJSXeZ932d12WMRpi1yNRVx7cFXlbfEIbHSENwAhOO4K-R_KOACJBNd1WUFsamM89xPNJT/pub?output=csv";
 
 const FIELDS = [
-  {key:"estoque",   label:"Estoque (Armazenamento PPP)", kw:["armazenamento ppp","armazenamentoppp","ppp","armazenamento","estoque","disponivel","saldo","disp"]},
-  {key:"codigo",    label:"Código",             kw:["codigo","cod"]},
-  {key:"referencia",label:"Referência",         kw:["referencia","refer","ref"]},
-  {key:"produto",   label:"Produto / Descrição",kw:["produto","descricao","desc"]},
-  {key:"mediaMes",  label:"Média mensal",       kw:["mediamensal","mediames","media"]},
-  {key:"reserva",   label:"Reserva ped venda",  kw:["reserva"]},
-  {key:"emb",       label:"Emb (múltiplo)",     kw:["emb","embalagem","multiplo"]},
+  {key:"codigo",    label:"Código",                   kw:["codigo","cod"]},
+  {key:"referencia",label:"Referência",               kw:["referencia","refer","ref"]},
+  {key:"endereco",  label:"Endereço (Armazenam. PPP)",kw:["armazenamento ppp","armazenamentoppp","armazenamento","ppp","endereco","localizacao","local"]},
+  {key:"produto",   label:"Produto / Descrição",      kw:["produto","descricao","desc"]},
+  {key:"estoque",   label:"Estoque disponível",       kw:["estoque disponivel","estoquedisponivel","estoque","disponivel","saldo"]},
+  {key:"mediaMes",  label:"Média mensal",             kw:["media mensal","mediamensal","media mes","media"]},
+  {key:"reserva",   label:"Reserva ped venda",        kw:["reserva"]},
+  {key:"emb",       label:"Emb (múltiplo)",           kw:["emb","embalagem","multiplo"]},
 ];
 
 const cfg = {
   url1: DEFAULT_URL1, url2:"",
   dias:22, alvo:30, crit:5,
+  hideReservaZero:true,   // reserva 0 -> não exibe
+  hideEstoqueMenor:true,  // estoque < reserva -> não exibe
   map:{}   // overrides manuais: key -> índice de coluna
 };
 
 let RAW = [];        // itens crus mapeados
 let ITEMS = [];      // itens processados (pós-supressão)
 let SNOOZED = 0;
+let HIDE_RES = 0;    // ocultos por reserva = 0
+let HIDE_EST = 0;    // ocultos por estoque < reserva
 let activeFilter = "all";
 let searchMode = "all";
 let searchTerm = "";
@@ -526,6 +607,7 @@ function buildItems(rows){
     items.push({
       codigo, produto,
       referencia:String(get("referencia")).trim(),
+      endereco:String(get("endereco")).trim(),
       estoque:parseNum(get("estoque")),
       mediaMes:parseNum(get("mediaMes")),
       reserva:parseNum(get("reserva")),
@@ -571,6 +653,15 @@ function compute(items){
   });
 }
 
+function applyBusinessRules(items){
+  HIDE_RES=0; HIDE_EST=0;
+  return items.filter(it=>{
+    if(cfg.hideReservaZero && it.reserva<=0){ HIDE_RES++; return false; }
+    if(cfg.hideEstoqueMenor && it.estoque < it.reserva){ HIDE_EST++; return false; }
+    return true;
+  });
+}
+
 function applySnooze(items,snooze){
   SNOOZED=0;
   return items.filter(it=>{
@@ -611,40 +702,71 @@ function visibleItems(){
       if(searchMode==="prod") return norm(i.produto).includes(t);
       if(searchMode==="ref")  return norm(i.referencia).includes(t);
       if(searchMode==="cod")  return norm(i.codigo).includes(t);
-      return norm(i.produto).includes(t)||norm(i.referencia).includes(t)||norm(i.codigo).includes(t);
+      return norm(i.produto).includes(t)||norm(i.referencia).includes(t)||norm(i.codigo).includes(t)||norm(i.endereco).includes(t);
     });
   }
   arr.sort((a,b)=> severity(b.status)-severity(a.status) || (isFinite(b.ratio)?b.ratio:99)-(isFinite(a.ratio)?a.ratio:99));
   return arr;
 }
 
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+const PIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+const CART='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>';
+function isMobile(){return window.matchMedia("(max-width:820px)").matches;}
+
+function rowHTML(it,i){
+  const sugCls=it.sug>0?"has":"zero";
+  const embCls=it.emb.frac?"emb-tag emb-frac":"emb-tag";
+  const cob = isFinite(it.cobertura)? fmt(it.cobertura,1)+" d" : "&infin;";
+  const addr = it.endereco? `<span class="addr">${PIN}${esc(it.endereco)}</span>` : "—";
+  return `<tr class="row-anim" style="animation-delay:${Math.min(i*16,320)}ms">
+    <td>${statusBadge(it.status)}</td>
+    <td class="cod">${esc(it.codigo)||"—"}</td>
+    <td><span class="ref">${esc(it.referencia)||"—"}</span></td>
+    <td>${addr}</td>
+    <td class="prod">${esc(it.produto)||"—"}</td>
+    <td class="num tnum">${fmt(it.estoque)}</td>
+    <td class="num tnum">${fmt(it.reserva)}</td>
+    <td class="num tnum">${fmt(it.mediaMes)}</td>
+    <td class="num tnum">${fmt(it.mediaDia,1)}</td>
+    <td>${thermo(it)}</td>
+    <td class="num tnum">${cob}</td>
+    <td class="num"><span class="sug ${sugCls}">${it.sug>0?fmt(it.sug):"—"}</span> <span class="${embCls}">${esc(it.emb.raw)}</span></td>
+  </tr>`;
+}
+
+function cardHTML(it,i){
+  const cob = isFinite(it.cobertura)? fmt(it.cobertura,1)+" d" : "&infin;";
+  const addr = it.endereco? `<span class="mc-addr">${PIN}${esc(it.endereco)}</span>` : "";
+  const sug = it.sug>0
+    ? `<div class="mc-sug">${CART}Abastecer ~ <b>${fmt(it.sug)}</b> <span>(emb ${esc(it.emb.raw)})</span></div>` : "";
+  return `<div class="mcard mc-${it.status}" style="animation-delay:${Math.min(i*16,320)}ms">
+    <div class="mc-top">${statusBadge(it.status)}<span class="mc-cod">#${esc(it.codigo)||"—"}</span>${addr}</div>
+    <div class="mc-prod">${esc(it.produto)||"—"}</div>
+    <div class="mc-ref">${esc(it.referencia)||""}</div>
+    <div class="mc-thermo">${thermo(it)}</div>
+    <div class="mc-grid">
+      <div><span>Estoque</span><b>${fmt(it.estoque)}</b></div>
+      <div><span>Reserva</span><b>${fmt(it.reserva)}</b></div>
+      <div><span>Média/dia</span><b>${fmt(it.mediaDia,1)}</b></div>
+      <div><span>Cobertura</span><b>${cob}</b></div>
+    </div>
+    ${sug}
+  </div>`;
+}
+
 function renderTable(){
   const tb=document.getElementById("tbody");
-  const arr=visibleItems();
+  const cards=document.getElementById("cards");
   const empty=document.getElementById("emptyState");
-  if(!ITEMS.length){ tb.innerHTML=""; empty.style.display="block";
+  const arr=visibleItems();
+  if(!ITEMS.length){ tb.innerHTML="";cards.innerHTML="";empty.style.display="block";
     empty.querySelector("div").innerHTML='Nenhum item carregado ainda. Clique em <b>Atualizar</b> ou abra <b>Config</b> para conectar sua planilha.'; return; }
-  if(!arr.length){ tb.innerHTML=""; empty.style.display="block";
+  if(!arr.length){ tb.innerHTML="";cards.innerHTML="";empty.style.display="block";
     empty.querySelector("div").innerHTML="Nenhum item bate com o filtro/busca atual."; return; }
   empty.style.display="none";
-  tb.innerHTML=arr.map((it,i)=>{
-    const sugCls=it.sug>0?"has":"zero";
-    const embCls=it.emb.frac?"emb-tag emb-frac":"emb-tag";
-    const cob = isFinite(it.cobertura)? fmt(it.cobertura,1)+" d" : "&infin;";
-    return `<tr class="row-anim" style="animation-delay:${Math.min(i*22,400)}ms">
-      <td>${statusBadge(it.status)}</td>
-      <td class="cod">${it.codigo||"—"}</td>
-      <td class="ref">${it.referencia||"—"}</td>
-      <td class="prod">${it.produto||"—"}</td>
-      <td class="num tnum">${fmt(it.estoque)}</td>
-      <td class="num tnum">${fmt(it.reserva)}</td>
-      <td class="num tnum">${fmt(it.mediaMes)}</td>
-      <td class="num tnum">${fmt(it.mediaDia,1)}</td>
-      <td>${thermo(it)}</td>
-      <td class="num tnum">${cob}</td>
-      <td class="num"><span class="sug ${sugCls}">${it.sug>0?fmt(it.sug):"—"}</span> <span class="${embCls}">${it.emb.raw}</span></td>
-    </tr>`;
-  }).join("");
+  if(isMobile()){ cards.innerHTML=arr.map(cardHTML).join(""); tb.innerHTML=""; }
+  else { tb.innerHTML=arr.map(rowHTML).join(""); cards.innerHTML=""; }
 }
 
 function animateCount(el,target){
@@ -673,6 +795,15 @@ function renderKPIs(){
   document.getElementById("tipCrit").textContent=cfg.crit;
   document.getElementById("tipDias").textContent=cfg.dias;
   document.getElementById("tipAlvo").textContent=cfg.alvo;
+  // nota de itens ocultos pelas regras de exibição
+  const note=document.getElementById("ruleNote");
+  const oc=HIDE_RES+HIDE_EST;
+  if(oc>0){
+    note.style.display="flex";
+    note.querySelector("#ruleNoteTxt").innerHTML=
+      `${fmt(oc)} ${oc===1?"item ocultado":"itens ocultados"} pelas regras: `+
+      `<b>${fmt(HIDE_RES)}</b> com reserva 0 e <b>${fmt(HIDE_EST)}</b> com estoque menor que a reserva.`;
+  } else { note.style.display="none"; }
 }
 
 function showBanner(type,html){
@@ -715,7 +846,7 @@ async function refresh(){
       try{ snooze=buildSnooze(await fetchCSV(cfg.url2)); }
       catch(e){ showBanner("warn","Os dados foram carregados, mas não consegui ler a aba <b>Página2</b> (verifique o link). A regra de itens adiados ficou desativada."); }
     }
-    const all=compute(RAW);
+    const all=applyBusinessRules(compute(RAW));
     ITEMS=applySnooze(all,snooze);
     renderKPIs(); renderTable();
     stamp(true);
@@ -756,20 +887,21 @@ function loadDemo(silent){
   const plus=n=>{const d=new Date(today);d.setDate(d.getDate()+n);return d.toLocaleDateString("pt-BR");};
   const minus=n=>plus(-n);
   const demo=[
-    ["1001","REF-A100","Parafuso sextavado M8","120","220","18","50"],
-    ["1002","REF-B205","Cabo flexível 2,5mm²","35","660","40","100*"],
-    ["1003","REF-C310","Fita isolante 19mm","480","220","8","10"],
-    ["1004","REF-D415","Disjuntor 20A","22","132","9","1"],
-    ["1005","REF-E520","Tomada 2P+T 10A","300","88","3","25"],
-    ["1006","REF-F625","Lâmpada LED 9W","60","440","25","50"],
-    ["1007","REF-G730","Eletroduto 3/4\"","90","110","6","20*"],
-    ["1008","REF-H835","Conector RJ45","1500","1100","60","100"],
-    ["1009","REF-I940","Sensor de presença","12","44","5","1"],
-    ["1010","REF-J045","Caixa de luz 4x2","800","220","4","50"],
-    ["1011","REF-K150","Cabo HDMI 2m","0","66","10","5"],
-    ["1012","REF-L255","Filtro de linha 5 tomadas","240","22","0","12"]
+    //codigo, ref, endereço PPP, produto, estoque disp, média mês, reserva, emb
+    ["1001","REF-A100","A-01-12","Parafuso sextavado M8","120","220","18","50"],
+    ["1002","REF-B205","B-03-07","Cabo flexível 2,5mm²","35","660","40","100*"],
+    ["1003","REF-C310","C-02-15","Fita isolante 19mm","480","220","8","10"],
+    ["1004","REF-D415","A-04-02","Disjuntor 20A","22","132","9","1"],
+    ["1005","REF-E520","D-01-09","Tomada 2P+T 10A","300","88","3","25"],
+    ["1006","REF-F625","B-05-11","Lâmpada LED 9W","60","440","25","50"],
+    ["1007","REF-G730","C-06-04","Eletroduto 3/4\"","90","110","6","20*"],
+    ["1008","REF-H835","E-02-08","Conector RJ45","1500","1100","60","100"],
+    ["1009","REF-I940","A-07-13","Sensor de presença","12","44","5","1"],
+    ["1010","REF-J045","D-03-06","Caixa de luz 4x2","800","220","4","50"],
+    ["1011","REF-K150","B-01-01","Cabo HDMI 2m","0","66","10","5"],
+    ["1012","REF-L255","C-04-10","Filtro de linha 5 tomadas","240","22","0","12"]
   ];
-  const rows=[["Armazenamento PPP","código","referência","produto","média mensal","reserva ped venda","emb"], ...demo];
+  const rows=[["código","referência","Armazenamento PPP","produto","estoque disponível","média mensal","reserva ped venda","emb"], ...demo];
   RAW=buildItems(rows);
   const snoozeRows=[
     ["código","obs","lembrar em"],
@@ -778,7 +910,7 @@ function loadDemo(silent){
     ["1003","OK",""]                          // vazio -> aparece
   ];
   const snooze=buildSnooze(snoozeRows);
-  ITEMS=applySnooze(compute(RAW),snooze);
+  ITEMS=applySnooze(applyBusinessRules(compute(RAW)),snooze);
   renderKPIs(); renderTable(); stamp(true);
   setConn("Dados de exemplo",false);
   if(!silent) showBanner("warn","Exibindo <b>dados de exemplo</b>. Configure o link da sua planilha para ver os números reais.");
@@ -811,6 +943,8 @@ function loadCfg(){
   document.getElementById("cfgDias").value=cfg.dias;
   document.getElementById("cfgAlvo").value=cfg.alvo;
   document.getElementById("cfgCrit").value=cfg.crit;
+  document.getElementById("cfgHideRes").checked=cfg.hideReservaZero!==false;
+  document.getElementById("cfgHideEst").checked=cfg.hideEstoqueMenor!==false;
 }
 
 /* ============ Eventos ============ */
@@ -826,6 +960,8 @@ document.getElementById("saveBtn").addEventListener("click",()=>{
   cfg.dias=Math.max(1,parseInt(document.getElementById("cfgDias").value)||22);
   cfg.alvo=Math.max(1,parseInt(document.getElementById("cfgAlvo").value)||30);
   cfg.crit=Math.max(0,parseInt(document.getElementById("cfgCrit").value)||5);
+  cfg.hideReservaZero=document.getElementById("cfgHideRes").checked;
+  cfg.hideEstoqueMenor=document.getElementById("cfgHideEst").checked;
   // overrides de colunas
   cfg.map={};
   document.querySelectorAll("#mapBox select").forEach(s=>{ if(s.value!=="") cfg.map[s.dataset.key]=parseInt(s.value); });
@@ -842,6 +978,14 @@ document.getElementById("filters").addEventListener("click",e=>{
   const b=e.target.closest("button"); if(!b)return;
   document.querySelectorAll("#filters .chip").forEach(x=>x.classList.remove("active"));
   b.classList.add("active"); activeFilter=b.dataset.f; renderTable();
+});
+
+// alterna layout tabela <-> cards ao cruzar o breakpoint mobile
+let _wasMobile=isMobile();
+let _rzT;
+window.addEventListener("resize",()=>{
+  clearTimeout(_rzT);
+  _rzT=setTimeout(()=>{ const m=isMobile(); if(m!==_wasMobile){ _wasMobile=m; renderTable(); } },150);
 });
 
 /* ============ Início ============ */
