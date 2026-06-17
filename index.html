@@ -175,7 +175,7 @@
   /* larguras fixas p/ caber tudo em uma tela */
   col.c-sit{width:8.5%}col.c-cod{width:5%}col.c-ref{width:8%}col.c-addr{width:7%}
   col.c-prod{width:auto}col.c-est{width:5.5%}col.c-res{width:6%}col.c-mm{width:5.5%}
-  col.c-md{width:6%}col.c-term{width:9.5%}col.c-cob{width:6.5%}col.c-sug{width:9%}col.c-act{width:6.5%}
+  col.c-md{width:6%}col.c-term{width:8.5%}col.c-cob{width:6%}col.c-sug{width:8.5%}col.c-act{width:8.5%}
 
   .cod{font-weight:700;color:var(--navy-800);font-variant-numeric:tabular-nums}
   .ref{font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
@@ -354,6 +354,31 @@
   .resolve-msg.err{background:var(--crit-bg);color:#8a241d;border:1px solid #f0c2bd}
   .resolve-msg.info{background:#EEF3F8;color:var(--navy-800);border:1px solid var(--line-strong)}
 
+  /* ---------- Ação dupla (Resolver + Adiar) ---------- */
+  .act-wrap{display:flex;flex-direction:column;gap:5px;align-items:stretch}
+  .adiar-btn{border:1px solid var(--line-strong);background:#fff;color:var(--steel);border-radius:8px;padding:5px 8px;font-size:.72rem;font-weight:700;transition:.14s;white-space:nowrap}
+  .adiar-btn:hover{border-color:var(--steel);background:#F4F7FA;color:var(--navy-800)}
+  .adiar-btn.full{width:100%;padding:10px;font-size:.84rem}
+  .mc-act-row{display:flex;gap:8px}
+  .mc-act-row .res-btn,.mc-act-row .res-done{flex:2}
+  .mc-act-row .adiar-btn{flex:1}
+
+  /* ---------- Roteiro por corredor ---------- */
+  .route-btn{display:inline-flex;align-items:center;gap:5px}
+  .route-btn.on{background:var(--navy-800);color:#fff;border-color:var(--navy-800)}
+  tr.grp-row td{background:linear-gradient(90deg,#EEF3F8,#F6F8FB);border-top:2px solid var(--line-strong);border-bottom:1px solid var(--line-strong);
+    font-family:'Sora','Inter',sans-serif;font-weight:700;font-size:.8rem;color:var(--navy-800);letter-spacing:.02em;padding:9px 10px}
+  tr.grp-row td span{font-family:'Inter';font-weight:600;font-size:.72rem;color:var(--muted);margin-left:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:1px 9px}
+  .grp-head{display:flex;align-items:center;gap:9px;font-family:'Sora','Inter',sans-serif;font-weight:700;font-size:.92rem;color:var(--navy-800);
+    padding:11px 4px 5px;border-bottom:2px solid var(--line-strong);margin-top:6px}
+  .grp-head span{font-family:'Inter';font-weight:600;font-size:.74rem;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:1px 9px}
+
+  /* ---------- Presets de adiar ---------- */
+  .preset-row{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+  .preset-row button{border:1px solid var(--line-strong);background:#fff;border-radius:999px;padding:6px 13px;font-size:.8rem;font-weight:600;color:var(--navy-800);transition:.14s}
+  .preset-row button:hover{border-color:var(--steel)}
+  .preset-row button.on{background:var(--navy-800);border-color:var(--navy-800);color:#fff}
+
   .rule-note{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);margin:14px 2px 0;background:#F4F7FA;border:1px solid var(--line);border-radius:10px;padding:9px 13px}
   .rule-note b{color:var(--navy-800)}
   .p2-note{display:none;align-items:center;gap:8px;font-size:.78rem;margin:10px 2px 0;border-radius:10px;padding:9px 13px;border:1px solid}
@@ -476,26 +501,26 @@
   <div class="banner" id="banner"><span id="bannerIcon"></span><div id="bannerTxt"></div></div>
 
   <section class="kpis">
-    <div class="kpi k-total">
+    <div class="kpi k-total clickable" id="kpiTotalCard" tabindex="0" role="button" aria-label="Ver todos os itens">
       <div class="lbl">Itens analisados
         <span class="info" tabindex="0">i<span class="tip">Total de itens lidos da aba <b>analise estoque</b>, já descontando os que estão <b>adiados</b> pela Página2.</span></span>
       </div>
       <div class="val tnum" id="kpiTotal">0</div>
       <div class="sub" id="kpiTotalSub">&mdash;</div>
     </div>
-    <div class="kpi k-alert">
+    <div class="kpi k-alert clickable" id="kpiAlertCard" tabindex="0" role="button" aria-label="Filtrar itens acima da média/dia">
       <div class="lbl">Acima da média/dia
         <span class="info" tabindex="0">i<span class="tip">Itens cuja <b>Reserva p/ venda</b> do dia já superou a <b>média de saída por dia</b> (média mensal ÷ dias úteis). São os que estão saindo mais rápido que o normal.</span></span>
       </div>
       <div class="val tnum" id="kpiAlert">0</div>
-      <div class="sub">precisam de atenção</div>
+      <div class="sub">precisam de atenção <span class="see">Filtrar &rarr;</span></div>
     </div>
-    <div class="kpi k-crit">
+    <div class="kpi k-crit clickable" id="kpiCritCard" tabindex="0" role="button" aria-label="Filtrar itens críticos para abastecer">
       <div class="lbl">Críticos p/ abastecer
         <span class="info" tabindex="0">i<span class="tip">Estoque livre cobre menos de <b id="tipCrit">5</b> dias de venda. Risco de ruptura &mdash; priorize a compra.</span></span>
       </div>
       <div class="val tnum" id="kpiCrit">0</div>
-      <div class="sub">cobertura baixa</div>
+      <div class="sub">cobertura baixa <span class="see">Filtrar &rarr;</span></div>
     </div>
     <div class="kpi k-snooze clickable" id="kpiSnoozeCard" tabindex="0" role="button" aria-label="Ver itens adiados pela Página2 e suas datas">
       <div class="lbl">Adiados (Página2)
@@ -540,6 +565,7 @@
         <option value="sug">Sugestão de compra</option>
       </select>
       <button class="sort-dir" id="sortDirBtn" title="Inverter a ordem">↓ maior</button>
+      <button class="sort-dir route-btn" id="routeBtn" title="Agrupar por corredor (roteiro de separação)">🚶 Roteiro por corredor</button>
     </div>
   </section>
 
@@ -722,6 +748,36 @@
   </div>
 </div>
 
+<!-- ===== Modal: adiar item ===== -->
+<div class="overlay" id="adiarOverlay"></div>
+<div class="modal modal-sm" id="adiarModal" role="dialog" aria-modal="true" aria-label="Adiar item">
+  <div class="modal-head">
+    <div>
+      <h2>Adiar item</h2>
+      <p id="adiarSub">&mdash;</p>
+    </div>
+    <button id="closeAdiar" aria-label="Fechar">&times;</button>
+  </div>
+  <div class="modal-body">
+    <div class="fld">
+      <label>Me lembre daqui quantos <b>dias úteis</b>?</label>
+      <div class="hint">Grava na coluna B da Página2; seu script calcula a data (coluna C) pulando fins de semana. O item sai da análise até lá.</div>
+      <div class="preset-row" id="adiarPresets">
+        <button data-d="3">3 dias</button>
+        <button data-d="7" class="on">7 dias</button>
+        <button data-d="15">15 dias</button>
+        <button data-d="30">30 dias</button>
+      </div>
+      <input type="number" id="adiarDias" min="1" max="120" value="7">
+    </div>
+    <div class="resolve-msg" id="adiarMsg"></div>
+  </div>
+  <div class="modal-foot resolve-foot">
+    <button class="btn btn-demo" id="adiarCancel">Cancelar</button>
+    <button class="btn btn-save" id="adiarOk">⏰ Adiar</button>
+  </div>
+</div>
+
 <script>
 "use strict";
 
@@ -766,6 +822,7 @@ let searchMode = "all";
 let searchTerm = "";
 let sortKey = "prioridade";
 let sortDir = "desc";
+let groupByAddr = false;   // roteiro por corredor
 let lastHeaders = [];
 
 /* ---- Filtros por coluna (estilo Excel) ---- */
@@ -1060,6 +1117,12 @@ function sortNumVal(it,key){
   return null;
 }
 const TEXT_KEYS=["produto","endereco","referencia"];
+function corredorOf(it){
+  const e=String(it.endereco||"").trim();
+  if(!e) return "Sem endereço";
+  const first=e.split(/[.\-\/\s]+/)[0];
+  return first ? first.toUpperCase() : e.toUpperCase();
+}
 
 function visibleItems(){
   let arr=ITEMS.slice();
@@ -1084,6 +1147,16 @@ function visibleItems(){
   // filtros por coluna (combinados em E, como o filtro de uma planilha)
   const conds=colConds.filter(activeCond);
   if(conds.length) arr=arr.filter(it=>conds.every(c=>matchCond(it,c)));
+  if(groupByAddr){
+    // roteiro: ordena por corredor e, dentro dele, pelo endereço completo
+    arr.sort((a,b)=>{
+      const ca=corredorOf(a), cb=corredorOf(b);
+      const r=ca.localeCompare(cb,"pt",{numeric:true,sensitivity:"base"});
+      if(r) return r;
+      return String(a.endereco||"").localeCompare(String(b.endereco||""),"pt",{numeric:true,sensitivity:"base"});
+    });
+    return arr;
+  }
   arr.sort((a,b)=>{
     if(sortKey==="prioridade"){
       // cada lente é ordenada pela sua própria urgência
@@ -1149,9 +1222,10 @@ function rowHTML(it,i){
   const embCls=it.emb.frac?"emb-tag emb-frac":"emb-tag";
   const cob = isFinite(it.cobertura)? fmt(it.cobertura,1)+" d" : "&infin;";
   const addr = it.endereco? `<span class="addr">${PIN}${esc(it.endereco)}</span>` : "—";
-  const act = it.resolvido
+  const resBtn = it.resolvido
     ? `<button class="res-done" data-resolve="${esc(it.codigo)}" title="${esc(it.resolvido)}">✓ Resolvido</button>`
     : `<button class="res-btn" data-resolve="${esc(it.codigo)}">Resolver</button>`;
+  const act = `<div class="act-wrap">${resBtn}<button class="adiar-btn" data-adiar="${esc(it.codigo)}">⏰ Adiar</button></div>`;
   return `<tr class="row-anim${it.resolvido?' is-resolved':''}" style="animation-delay:${Math.min(i*16,320)}ms">
     <td>${statusBadge(it.status)}</td>
     <td class="cod">${esc(it.codigo)||"—"}</td>
@@ -1174,10 +1248,10 @@ function cardHTML(it,i){
   const addr = it.endereco? `<span class="mc-addr">${PIN}${esc(it.endereco)}</span>` : "";
   const sug = it.sug>0
     ? `<div class="mc-sug">${CART}Abastecer ~ <b>${fmt(it.sug)}</b> <span>(emb ${esc(it.emb.raw)})</span></div>` : "";
-  const act = it.resolvido
-    ? `<button class="res-done full" data-resolve="${esc(it.codigo)}">✓ Resolvido &mdash; toque para editar</button>
-       <div class="mc-resolved">${esc(it.resolvido)}</div>`
+  const resBtn = it.resolvido
+    ? `<button class="res-done full" data-resolve="${esc(it.codigo)}">✓ Resolvido &mdash; toque para editar</button>`
     : `<button class="res-btn full" data-resolve="${esc(it.codigo)}">Marcar como resolvido</button>`;
+  const resNote = it.resolvido ? `<div class="mc-resolved">${esc(it.resolvido)}</div>` : "";
   return `<div class="mcard mc-${it.status}${it.resolvido?' is-resolved':''}" style="animation-delay:${Math.min(i*16,320)}ms">
     <div class="mc-top">${statusBadge(it.status)}<span class="mc-cod">#${esc(it.codigo)||"—"}</span>${addr}</div>
     <div class="mc-prod">${esc(it.produto)||"—"}</div>
@@ -1190,7 +1264,7 @@ function cardHTML(it,i){
       <div><span>Cobertura</span><b>${cob}</b></div>
     </div>
     ${sug}
-    <div class="mc-act">${act}</div>
+    <div class="mc-act"><div class="mc-act-row">${resBtn}<button class="adiar-btn full" data-adiar="${esc(it.codigo)}">⏰ Adiar</button></div>${resNote}</div>
   </div>`;
 }
 
@@ -1204,6 +1278,25 @@ function renderTable(){
   if(!arr.length){ tb.innerHTML="";cards.innerHTML="";empty.style.display="block";
     empty.querySelector("div").innerHTML="Nenhum item bate com o filtro/busca atual."; return; }
   empty.style.display="none";
+  if(groupByAddr){
+    let lastG=null, out=[], n=0;
+    // pré-conta por corredor
+    const counts={}; arr.forEach(it=>{ const g=corredorOf(it); counts[g]=(counts[g]||0)+1; });
+    if(isMobile()){
+      arr.forEach((it,i)=>{ const g=corredorOf(it);
+        if(g!==lastG){ out.push(`<div class="grp-head">${esc(g)} <span>${counts[g]} ${counts[g]===1?"item":"itens"}</span></div>`); lastG=g; }
+        out.push(cardHTML(it,i));
+      });
+      cards.innerHTML=out.join(""); tb.innerHTML="";
+    }else{
+      arr.forEach((it,i)=>{ const g=corredorOf(it);
+        if(g!==lastG){ out.push(`<tr class="grp-row"><td colspan="13">${esc(g)} <span>${counts[g]} ${counts[g]===1?"item":"itens"}</span></td></tr>`); lastG=g; }
+        out.push(rowHTML(it,i));
+      });
+      tb.innerHTML=out.join(""); cards.innerHTML="";
+    }
+    return;
+  }
   if(isMobile()){ cards.innerHTML=arr.map(cardHTML).join(""); tb.innerHTML=""; }
   else { tb.innerHTML=arr.map(rowHTML).join(""); cards.innerHTML=""; }
 }
@@ -1438,7 +1531,28 @@ function renderSnoozeModal(){
 function openSnooze(){ renderSnoozeModal(); document.getElementById("snoozeOverlay").classList.add("open"); document.getElementById("snoozeModal").classList.add("open"); }
 function closeSnooze(){ document.getElementById("snoozeOverlay").classList.remove("open"); document.getElementById("snoozeModal").classList.remove("open"); }
 
-/* ============ Modal: marcar resolvido (grava na coluna D via Apps Script) ============ */
+/* ============ Gravação no Apps Script + verificação real ============ */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function postScript(payload){
+  return fetch(cfg.scriptUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+}
+async function fetchSnooze(){
+  if(!cfg.url2) return null;
+  try{ return buildSnooze(await fetchCSV(cfg.url2)); }catch(e){ return null; }
+}
+// relê a Página2 e confirma de verdade que a gravação chegou (coluna D ou coluna C)
+async function verifyWrite(kind,codigo){
+  for(let i=0;i<3;i++){
+    await sleep(i===0?1400:1600);
+    const sn=await fetchSnooze();
+    if(!sn) continue;
+    if(kind==="resolver" && lookupResolved(sn.resolved,codigo)) return true;
+    if(kind==="adiar"   && codeKeys(codigo).some(k=>sn.map[k]))  return true;
+  }
+  return false;
+}
+
+/* ============ Modal: marcar resolvido (grava na coluna D) ============ */
 let resolveCodigo=null;
 function openResolve(codigo){
   resolveCodigo=codigo;
@@ -1472,31 +1586,76 @@ async function confirmResolve(){
   const msg  =document.getElementById("resolveMsg");
   const okBtn=document.getElementById("resolveOk");
   cfg.quem=quem; saveCfg();
-  if(!cfg.scriptUrl){
-    msg.className="resolve-msg show err";
-    msg.innerHTML="Falta o <b>link do app da web</b> em Config para gravar.";
-    return;
-  }
+  if(!cfg.scriptUrl){ msg.className="resolve-msg show err"; msg.innerHTML="Falta o <b>link do app da web</b> em Config para gravar."; return; }
   okBtn.disabled=true; okBtn.textContent="Gravando...";
   const carimbo=new Date().toLocaleString("pt-BR");
   const registro=(texto||"Resolvido")+(quem?" — "+quem:"")+" ("+carimbo+")";
   try{
-    await fetch(cfg.scriptUrl,{
-      method:"POST", mode:"no-cors",
-      headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify({codigo,texto,quem})
-    });
-    markResolvedLocal(codigo,registro);     // atualização otimista
-    renderKPIs(); renderTable();
-    msg.className="resolve-msg show ok";
-    msg.innerHTML="Gravado na Página2 (coluna D). Atualizando para confirmar...";
-    setTimeout(()=>{ closeResolve(); refresh(); },2800);
-  }catch(err){
-    msg.className="resolve-msg show err";
-    msg.innerHTML="Não consegui enviar. Confira o link do app e a conexão.";
-  }finally{
-    okBtn.disabled=false; okBtn.textContent="✓ Gravar resolvido";
+    await postScript({acao:"resolver",codigo,texto,quem});
+    markResolvedLocal(codigo,registro); renderKPIs(); renderTable();
+    msg.className="resolve-msg show info"; msg.innerHTML="Enviado. Conferindo na planilha...";
+    const ok=await verifyWrite("resolver",codigo);
+    if(ok){ msg.className="resolve-msg show ok"; msg.innerHTML="✓ Confirmado: gravado na coluna D da Página2."; setTimeout(()=>{ closeResolve(); refresh(); },1100); }
+    else  { msg.className="resolve-msg show err"; msg.innerHTML="⚠ Enviei, mas <b>não confirmei na planilha</b>. Pode ser atraso do Google ou o app não gravou. Feche e clique em <b>Atualizar</b> em instantes; se não aparecer, confira o link do app em Config (e se você republicou a <b>nova versão</b> do script)."; }
+  }catch(err){ msg.className="resolve-msg show err"; msg.innerHTML="Falha ao enviar. Confira o link do app e a conexão."; }
+  finally{ okBtn.disabled=false; okBtn.textContent="✓ Gravar resolvido"; }
+}
+
+/* ============ Modal: adiar (grava dias na coluna B; script calcula a data na C) ============ */
+let adiarCodigo=null;
+function addBusinessDays(n){ let d=new Date(); let r=n; while(r>0){ d.setDate(d.getDate()+1); const w=d.getDay(); if(w!==0&&w!==6) r--; } return dayOnly(d); }
+function openAdiar(codigo){
+  adiarCodigo=codigo;
+  const it=ITEMS.find(x=>String(x.codigo)===String(codigo)) || RAW.find(x=>String(x.codigo)===String(codigo));
+  document.getElementById("adiarSub").innerHTML = it ? `#${esc(it.codigo)} &middot; ${esc(it.produto)||"—"}` : `#${esc(codigo)}`;
+  document.getElementById("adiarDias").value=7;
+  const msg=document.getElementById("adiarMsg"); msg.className="resolve-msg"; msg.textContent="";
+  document.querySelectorAll("#adiarPresets button").forEach(b=>b.classList.toggle("on",b.dataset.d==="7"));
+  document.getElementById("adiarOverlay").classList.add("open");
+  document.getElementById("adiarModal").classList.add("open");
+}
+function closeAdiar(){
+  document.getElementById("adiarOverlay").classList.remove("open");
+  document.getElementById("adiarModal").classList.remove("open");
+  adiarCodigo=null;
+}
+function snoozeLocal(codigo,dias){
+  // remove da análise já e joga pra lista de adiados (otimista)
+  const it=ITEMS.find(x=>codeKeys(x.codigo).some(k=>codeKeys(codigo).includes(k)))
+        || RAW.find(x=>codeKeys(x.codigo).some(k=>codeKeys(codigo).includes(k)));
+  const date=addBusinessDays(dias);
+  const keys=codeKeys(codigo);
+  ITEMS=ITEMS.filter(x=> !codeKeys(x.codigo).some(k=>keys.includes(k)));
+  if(!SNOOZED_LIST.some(s=>codeKeys(s.codigo).some(k=>keys.includes(k)))){
+    SNOOZED_LIST.push({codigo, produto:it?it.produto:"", referencia:it?it.referencia:"", endereco:it?it.endereco:"", date, found:!!it});
+    SNOOZED++; SNOOZE_TOTAL++;
   }
+}
+async function confirmAdiar(){
+  if(!adiarCodigo) return;
+  const codigo=adiarCodigo;
+  const dias=Math.max(1,parseInt(document.getElementById("adiarDias").value,10)||0);
+  const msg=document.getElementById("adiarMsg");
+  const okBtn=document.getElementById("adiarOk");
+  if(!cfg.scriptUrl){ msg.className="resolve-msg show err"; msg.innerHTML="Falta o <b>link do app da web</b> em Config para gravar."; return; }
+  okBtn.disabled=true; okBtn.textContent="Adiando...";
+  try{
+    await postScript({acao:"adiar",codigo,dias});
+    snoozeLocal(codigo,dias); renderKPIs(); renderTable();
+    msg.className="resolve-msg show info"; msg.innerHTML="Enviado. Conferindo na planilha...";
+    const ok=await verifyWrite("adiar",codigo);
+    if(ok){ msg.className="resolve-msg show ok"; msg.innerHTML=`✓ Confirmado: item adiado por ${dias} dia(s) úteis (gravado na Página2).`; setTimeout(()=>{ closeAdiar(); refresh(); },1100); }
+    else  { msg.className="resolve-msg show err"; msg.innerHTML="⚠ Enviei, mas <b>não confirmei na planilha</b>. Pode ser atraso do Google ou o app não gravou. Feche e clique em <b>Atualizar</b>; se não aparecer, confira em Config se você republicou a <b>nova versão</b> do script (a opção 'adiar' exige o script atualizado)."; }
+  }catch(err){ msg.className="resolve-msg show err"; msg.innerHTML="Falha ao enviar. Confira o link do app e a conexão."; }
+  finally{ okBtn.disabled=false; okBtn.textContent="⏰ Adiar"; }
+}
+
+/* aplica filtro pelas chips/cards de KPI */
+function applyFilter(f){
+  activeFilter=f;
+  document.querySelectorAll("#filters .chip").forEach(x=>x.classList.toggle("active",x.dataset.f===f));
+  renderTable();
+  const c=document.querySelector(".controls"); if(c) c.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 /* ============ Persistência ============ */
@@ -1569,20 +1728,53 @@ document.getElementById("demoBtn").addEventListener("click",()=>{closeDrawer();l
   card.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); act(e); } });
   document.getElementById("closeSnooze").addEventListener("click",closeSnooze);
   document.getElementById("snoozeOverlay").addEventListener("click",closeSnooze);
-  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeSnooze(); closeResolve(); closeDrawer(); } });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeSnooze(); closeResolve(); closeAdiar(); closeDrawer(); } });
 })();
 
-/* --- botão Resolver (delegação) + modal resolver --- */
+/* --- botões Resolver/Adiar (delegação) + modais --- */
 (function(){
   document.addEventListener("click",e=>{
-    const b=e.target.closest("[data-resolve]");
-    if(b) openResolve(b.getAttribute("data-resolve"));
+    const r=e.target.closest("[data-resolve]");
+    if(r){ openResolve(r.getAttribute("data-resolve")); return; }
+    const a=e.target.closest("[data-adiar]");
+    if(a){ openAdiar(a.getAttribute("data-adiar")); return; }
   });
   document.getElementById("closeResolve").addEventListener("click",closeResolve);
   document.getElementById("resolveCancel").addEventListener("click",closeResolve);
   document.getElementById("resolveOverlay").addEventListener("click",closeResolve);
   document.getElementById("resolveOk").addEventListener("click",confirmResolve);
+  document.getElementById("closeAdiar").addEventListener("click",closeAdiar);
+  document.getElementById("adiarCancel").addEventListener("click",closeAdiar);
+  document.getElementById("adiarOverlay").addEventListener("click",closeAdiar);
+  document.getElementById("adiarOk").addEventListener("click",confirmAdiar);
+  document.getElementById("adiarPresets").addEventListener("click",e=>{
+    const b=e.target.closest("button[data-d]"); if(!b) return;
+    document.querySelectorAll("#adiarPresets button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); document.getElementById("adiarDias").value=b.dataset.d;
+  });
+  document.getElementById("adiarDias").addEventListener("input",()=>{
+    const v=document.getElementById("adiarDias").value;
+    document.querySelectorAll("#adiarPresets button").forEach(x=>x.classList.toggle("on",x.dataset.d===String(v)));
+  });
 })();
+
+/* --- cards de KPI clicáveis (aplicam filtro) --- */
+(function(){
+  [["kpiTotalCard","all"],["kpiAlertCard","acima"],["kpiCritCard","critico"]].forEach(([id,f])=>{
+    const el=document.getElementById(id); if(!el) return;
+    const act=e=>{ if(e.target.closest(".info")) return; applyFilter(f); };
+    el.addEventListener("click",act);
+    el.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); act(e); } });
+  });
+})();
+
+/* --- roteiro por corredor --- */
+document.getElementById("routeBtn").addEventListener("click",()=>{
+  groupByAddr=!groupByAddr;
+  document.getElementById("routeBtn").classList.toggle("on",groupByAddr);
+  renderTable();
+});
+
 
 document.getElementById("saveBtn").addEventListener("click",()=>{
   cfg.url1=document.getElementById("cfgUrl1").value.trim();
