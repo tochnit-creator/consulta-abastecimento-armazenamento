@@ -175,7 +175,7 @@
   /* larguras fixas p/ caber tudo em uma tela */
   col.c-sit{width:8.5%}col.c-cod{width:5%}col.c-ref{width:8%}col.c-addr{width:7%}
   col.c-prod{width:auto}col.c-est{width:5.5%}col.c-res{width:6%}col.c-mm{width:5.5%}
-  col.c-md{width:6%}col.c-term{width:9.5%}col.c-cob{width:6.5%}col.c-sug{width:9.5%}
+  col.c-md{width:6%}col.c-term{width:9.5%}col.c-cob{width:6.5%}col.c-sug{width:9%}col.c-act{width:6.5%}
 
   .cod{font-weight:700;color:var(--navy-800);font-variant-numeric:tabular-nums}
   .ref{font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
@@ -325,6 +325,34 @@
   .sn-day{font-size:.74rem;color:var(--muted-2);font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap}
   .sn-empty{text-align:center;color:var(--muted);padding:34px 16px;font-size:.88rem;line-height:1.55}
   .sn-empty svg{width:40px;height:40px;color:var(--line-strong);margin-bottom:10px}
+
+  /* ---------- Ação: Resolver / Resolvido ---------- */
+  td.act{text-align:center}
+  .res-btn{border:1px solid var(--navy-700);background:#fff;color:var(--navy-700);border-radius:8px;padding:6px 10px;font-size:.74rem;font-weight:700;transition:.14s;white-space:nowrap}
+  .res-btn:hover{background:var(--navy-800);color:#fff;border-color:var(--navy-800)}
+  .res-done{border:1px solid #bfe2d3;background:var(--ok-bg);color:var(--ok);border-radius:8px;padding:6px 10px;font-size:.74rem;font-weight:700;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer}
+  .res-done:hover{background:#d7efe4}
+  .res-btn.full,.res-done.full{width:100%;justify-content:center;padding:10px;font-size:.84rem}
+  tr.is-resolved td:not(.act){opacity:.55}
+  tr.is-resolved .prod{text-decoration:line-through;text-decoration-color:var(--muted-2)}
+  .mcard.is-resolved{opacity:.82;border-left-color:var(--ok)}
+  .mc-act{margin-top:11px}
+  .mc-resolved{margin-top:7px;font-size:.78rem;color:var(--ok);background:var(--ok-bg);border:1px solid #bfe2d3;border-radius:8px;padding:7px 10px;line-height:1.4}
+
+  /* ---------- Modal resolver ---------- */
+  .modal.modal-sm{width:430px}
+  .modal-body textarea,.modal-body input[type="text"]{width:100%;padding:10px 12px;border:1px solid var(--line-strong);border-radius:9px;font-size:.88rem;font-family:inherit;color:var(--ink);background:#fff;resize:vertical}
+  .modal-body textarea:focus,.modal-body input:focus{outline:none;border-color:var(--navy-700);box-shadow:0 0 0 3px rgba(22,69,107,.12)}
+  .modal-body .fld{margin-bottom:14px}
+  .modal-body .fld label{display:block;font-size:.82rem;font-weight:600;color:var(--navy-800);margin-bottom:5px}
+  .modal-body .fld .hint{font-size:.74rem;color:var(--muted);margin:-1px 0 7px;line-height:1.45}
+  .resolve-foot{justify-content:flex-end;gap:10px}
+  .resolve-foot .btn{flex:none}
+  .resolve-msg{font-size:.8rem;border-radius:9px;padding:9px 12px;display:none}
+  .resolve-msg.show{display:block;animation:fade .25s}
+  .resolve-msg.ok{background:var(--ok-bg);color:#0a6e4b;border:1px solid #bfe2d3}
+  .resolve-msg.err{background:var(--crit-bg);color:#8a241d;border:1px solid #f0c2bd}
+  .resolve-msg.info{background:#EEF3F8;color:var(--navy-800);border:1px solid var(--line-strong)}
 
   .rule-note{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);margin:14px 2px 0;background:#F4F7FA;border:1px solid var(--line);border-radius:10px;padding:9px 13px}
   .rule-note b{color:var(--navy-800)}
@@ -494,6 +522,7 @@
       <button class="chip" data-f="acima">Acima da média <span class="cnt" id="cAcima">0</span></button>
       <button class="chip" data-f="critico">Críticos <span class="cnt" id="cCrit">0</span></button>
       <button class="chip" data-f="ok">Saudáveis <span class="cnt" id="cOk">0</span></button>
+      <button class="chip" data-f="resolvido">Resolvidos <span class="cnt" id="cRes">0</span></button>
     </div>
     <div class="sort-wrap">
       <label for="sortKey">Ordenar por</label>
@@ -536,7 +565,7 @@
         <colgroup>
           <col class="c-sit"><col class="c-cod"><col class="c-ref"><col class="c-addr">
           <col class="c-prod"><col class="c-est"><col class="c-res"><col class="c-mm">
-          <col class="c-md"><col class="c-term"><col class="c-cob"><col class="c-sug">
+          <col class="c-md"><col class="c-term"><col class="c-cob"><col class="c-sug"><col class="c-act">
         </colgroup>
         <thead>
           <tr>
@@ -557,6 +586,8 @@
               <span class="info" tabindex="0">i<span class="tip">(Estoque disp. − Reserva) ÷ média/dia. Por quantos <b>dias</b> o estoque livre ainda dura no ritmo atual.</span></span></span></th>
             <th class="num"><span class="th-in">Sugestão
               <span class="info" tabindex="0">i<span class="tip">Quanto comprar para cobrir <b id="tipAlvo">30</b> dias de venda, já arredondado para o múltiplo de venda (emb). <b>*</b> no emb = vende fracionado.</span></span></span></th>
+            <th><span class="th-in">Resolver
+              <span class="info" tabindex="0">i<span class="tip">Marque o item como <b>resolvido</b> enquanto trabalha. Grava na <b>coluna D da Página2</b> (com data e quem), fica visível para todos com o link e some/ marca aqui.</span></span></span></th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -619,6 +650,20 @@
       <input type="number" id="cfgCrit" min="0" max="60" value="5">
     </div>
 
+    <div class="sec-title">Marcar resolvido (coluna D)</div>
+    <div class="fld">
+      <label>Link do app da web (Apps Script)</label>
+      <div class="hint">URL que termina em <b>/exec</b>, da implantação do seu Apps Script. É o que grava "resolvido" na <b>coluna D</b> da Página2.</div>
+      <input type="text" id="cfgScript" placeholder="https://script.google.com/macros/s/.../exec">
+    </div>
+    <div class="fld">
+      <label>Seu nome / iniciais <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+      <div class="hint">Fica salvo neste aparelho e acompanha cada "resolvido" para identificar quem fez.</div>
+      <input type="text" id="cfgQuem" placeholder="Ex.: Maria / MS">
+    </div>
+    <label class="toggle"><input type="checkbox" id="cfgHideResolved"><span></span>
+      <div><b>Ocultar itens já resolvidos</b><small>Some do worklist quando resolvido (continuam visíveis na chip "Resolvidos").</small></div></label>
+
     <div class="sec-title">Regras de exibição</div>
     <label class="toggle"><input type="checkbox" id="cfgHideRes" checked><span></span>
       <div><b>Ocultar itens com reserva = 0</b><small>Sem demanda reservada, fora do painel.</small></div></label>
@@ -649,6 +694,34 @@
   <div class="modal-foot" id="snoozeFoot"></div>
 </div>
 
+<!-- ===== Modal: marcar resolvido ===== -->
+<div class="overlay" id="resolveOverlay"></div>
+<div class="modal modal-sm" id="resolveModal" role="dialog" aria-modal="true" aria-label="Marcar item como resolvido">
+  <div class="modal-head">
+    <div>
+      <h2>Marcar como resolvido</h2>
+      <p id="resolveSub">&mdash;</p>
+    </div>
+    <button id="closeResolve" aria-label="Fechar">&times;</button>
+  </div>
+  <div class="modal-body">
+    <div class="fld">
+      <label>Observação <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+      <div class="hint">Vai para a coluna D da Página2. Em branco, grava apenas "Resolvido".</div>
+      <textarea id="resolveTexto" rows="3" placeholder="Ex.: abastecido 500 un · OC 1234"></textarea>
+    </div>
+    <div class="fld">
+      <label>Quem <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+      <input type="text" id="resolveQuem" placeholder="Seu nome / iniciais">
+    </div>
+    <div class="resolve-msg" id="resolveMsg"></div>
+  </div>
+  <div class="modal-foot resolve-foot">
+    <button class="btn btn-demo" id="resolveCancel">Cancelar</button>
+    <button class="btn btn-save" id="resolveOk">✓ Gravar resolvido</button>
+  </div>
+</div>
+
 <script>
 "use strict";
 
@@ -656,6 +729,8 @@
 const DEFAULT_URL1 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2ZPsbxdrJSXeZ932d12WMRpi1yNRVx7cFXlbfEIbHSENwAhOO4K-R_KOACJBNd1WUFsamM89xPNJT/pub?output=csv";
 // Aba "Página2" — exportação CSV via gviz (funciona com a planilha compartilhada como "qualquer pessoa com o link pode ver")
 const DEFAULT_URL2 = "https://docs.google.com/spreadsheets/d/1osxV4f9-sPHqsAJIBfO0nVECIA_Wv24z9Cin6yYsCCw/gviz/tq?tqx=out:csv&gid=1685035984";
+// App da Web (Apps Script) que grava "resolvido" na coluna D da Página2
+const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwm7j_Gjiy1xh0z_rIauwsYpX4LaGkTcpVf347JxrQ-6uTzhsYP45H2nNiD3hUuKSzJIA/exec";
 
 const FIELDS = [
   {key:"codigo",    label:"Código",                   kw:["codigo","cod"]},
@@ -669,10 +744,11 @@ const FIELDS = [
 ];
 
 const cfg = {
-  url1: DEFAULT_URL1, url2: DEFAULT_URL2,
-  dias:22, alvo:30, crit:5,
+  url1: DEFAULT_URL1, url2: DEFAULT_URL2, scriptUrl: DEFAULT_SCRIPT_URL,
+  dias:22, alvo:30, crit:5, quem:"",
   hideReservaZero:true,   // reserva 0 -> não exibe
   hideEstoqueMenor:true,  // estoque < reserva -> não exibe
+  hideResolved:false,     // ocultar itens já resolvidos do worklist
   map:{}   // overrides manuais: key -> índice de coluna
 };
 
@@ -868,14 +944,24 @@ function buildSnooze(rows){
   }
   let colDate=2, best=-1;
   for(const c in counts){ if(counts[c]>best){ best=counts[c]; colDate=+c; } }
+  // coluna "resolvido" (D): por cabeçalho "resolv", senão a coluna logo após a data
+  let colResolved=-1;
+  if(hdr>=0){ const hr=(rows[hdr]||[]).map(norm); colResolved=hr.findIndex(t=>t.includes("resolv")); }
+  if(colResolved<0) colResolved=colDate+1;
+  const resolved={};
   // varredura final
   for(let i=start;i<rows.length;i++){
     const row=rows[i]||[];
     const cod=String(row[colCod]==null?"":row[colCod]).trim();
     if(!cod) continue;
-    if(norm(cod)==="codigo"||norm(cod)==="cod") continue;
+    const ncod=norm(cod);
+    if(ncod==="codigo"||ncod==="cod"||ncod==="itens"||ncod==="item") continue;
+    // resolvido (coluna D)
+    const rv=String(row[colResolved]==null?"":row[colResolved]).trim();
+    if(rv) codeKeys(cod).forEach(k=> resolved[k]=rv);
+    // lembrete futuro (coluna C)
     let d=parseDate(row[colDate]);
-    if(!d){ for(let c=row.length-1;c>=0;c--){ if(c===colCod) continue; const dd=parseDate(row[c]); if(dd){d=dd;break;} } }
+    if(!d){ for(let c=row.length-1;c>=0;c--){ if(c===colCod||c===colResolved) continue; const dd=parseDate(row[c]); if(dd){d=dd;break;} } }
     if(d && dayOnly(d)>today){
       SNOOZE_TOTAL++;
       const dd=dayOnly(d);
@@ -883,7 +969,7 @@ function buildSnooze(rows){
       list.push({codigo:cod, date:dd});
     }
   }
-  return {map, list};
+  return {map, list, resolved};
 }
 
 function compute(items){
@@ -921,6 +1007,10 @@ function applyBusinessRules(items){
 function removeSnoozed(items,map){
   // remove da ANÁLISE os itens com lembrete futuro (para não aparecerem na tabela)
   return items.filter(it=> !codeKeys(it.codigo).some(k=>map[k]));
+}
+function lookupResolved(resolved,codigo){
+  for(const k of codeKeys(codigo)){ if(resolved && resolved[k]) return resolved[k]; }
+  return "";
 }
 function buildSnoozedList(rawItems,list){
   // conta/lista os adiados a partir da Página2 (independente das regras de exibição),
@@ -979,6 +1069,9 @@ function visibleItems(){
   if(activeFilter==="acima") arr=arr.filter(i=>i.acima);
   else if(activeFilter==="critico") arr=arr.filter(i=>i.mediaDia>0 && i.cobertura<cfg.crit);
   else if(activeFilter==="ok") arr=arr.filter(i=>i.status==="ok");
+  else if(activeFilter==="resolvido") arr=arr.filter(i=>i.resolvido);
+  // opção: esconder do worklist os que já foram resolvidos (exceto quando estou vendo só resolvidos)
+  if(cfg.hideResolved && activeFilter!=="resolvido") arr=arr.filter(i=>!i.resolvido);
   if(searchTerm){
     const t=norm(searchTerm);
     arr=arr.filter(i=>{
@@ -1056,7 +1149,10 @@ function rowHTML(it,i){
   const embCls=it.emb.frac?"emb-tag emb-frac":"emb-tag";
   const cob = isFinite(it.cobertura)? fmt(it.cobertura,1)+" d" : "&infin;";
   const addr = it.endereco? `<span class="addr">${PIN}${esc(it.endereco)}</span>` : "—";
-  return `<tr class="row-anim" style="animation-delay:${Math.min(i*16,320)}ms">
+  const act = it.resolvido
+    ? `<button class="res-done" data-resolve="${esc(it.codigo)}" title="${esc(it.resolvido)}">✓ Resolvido</button>`
+    : `<button class="res-btn" data-resolve="${esc(it.codigo)}">Resolver</button>`;
+  return `<tr class="row-anim${it.resolvido?' is-resolved':''}" style="animation-delay:${Math.min(i*16,320)}ms">
     <td>${statusBadge(it.status)}</td>
     <td class="cod">${esc(it.codigo)||"—"}</td>
     <td><span class="ref">${esc(it.referencia)||"—"}</span></td>
@@ -1069,6 +1165,7 @@ function rowHTML(it,i){
     <td>${thermo(it)}</td>
     <td class="num tnum">${cob}</td>
     <td class="num"><span class="sug ${sugCls}">${it.sug>0?fmt(it.sug):"—"}</span> <span class="${embCls}">${esc(it.emb.raw)}</span></td>
+    <td class="act">${act}</td>
   </tr>`;
 }
 
@@ -1077,7 +1174,11 @@ function cardHTML(it,i){
   const addr = it.endereco? `<span class="mc-addr">${PIN}${esc(it.endereco)}</span>` : "";
   const sug = it.sug>0
     ? `<div class="mc-sug">${CART}Abastecer ~ <b>${fmt(it.sug)}</b> <span>(emb ${esc(it.emb.raw)})</span></div>` : "";
-  return `<div class="mcard mc-${it.status}" style="animation-delay:${Math.min(i*16,320)}ms">
+  const act = it.resolvido
+    ? `<button class="res-done full" data-resolve="${esc(it.codigo)}">✓ Resolvido &mdash; toque para editar</button>
+       <div class="mc-resolved">${esc(it.resolvido)}</div>`
+    : `<button class="res-btn full" data-resolve="${esc(it.codigo)}">Marcar como resolvido</button>`;
+  return `<div class="mcard mc-${it.status}${it.resolvido?' is-resolved':''}" style="animation-delay:${Math.min(i*16,320)}ms">
     <div class="mc-top">${statusBadge(it.status)}<span class="mc-cod">#${esc(it.codigo)||"—"}</span>${addr}</div>
     <div class="mc-prod">${esc(it.produto)||"—"}</div>
     <div class="mc-ref">${esc(it.referencia)||""}</div>
@@ -1089,6 +1190,7 @@ function cardHTML(it,i){
       <div><span>Cobertura</span><b>${cob}</b></div>
     </div>
     ${sug}
+    <div class="mc-act">${act}</div>
   </div>`;
 }
 
@@ -1129,6 +1231,7 @@ function renderKPIs(){
   document.getElementById("cAcima").textContent=acima;
   document.getElementById("cCrit").textContent=crit;
   document.getElementById("cOk").textContent=ok;
+  document.getElementById("cRes").textContent=ITEMS.filter(i=>i.resolvido).length;
   document.getElementById("tipCrit").textContent=cfg.crit;
   document.getElementById("tipDias").textContent=cfg.dias;
   document.getElementById("tipAlvo").textContent=cfg.alvo;
@@ -1195,12 +1298,13 @@ async function refresh(){
     RAW=buildItems(rows);
     if(!RAW.length) throw new Error("EMPTY");
 
-    let sn={map:{},list:[]};
+    let sn={map:{},list:[],resolved:{}};
     P2_LOADED=false; P2_ERROR=false; SNOOZE_TOTAL=0;
     if(cfg.url2){
       try{ sn=buildSnooze(await fetchCSV(cfg.url2)); P2_LOADED=true; }
       catch(e){ P2_ERROR=true; }
     }
+    RAW.forEach(it=> it.resolvido = lookupResolved(sn.resolved, it.codigo));
     const all=applyBusinessRules(compute(RAW));
     ITEMS=removeSnoozed(all,sn.map);
     buildSnoozedList(RAW,sn.list);
@@ -1260,13 +1364,14 @@ function loadDemo(silent){
   const rows=[["código","referência","Armazenamento PPP","produto","estoque disponível","média mensal","reserva ped venda","emb"], ...demo];
   RAW=buildItems(rows);
   const snoozeRows=[
-    ["código","obs","lembrar em"],
-    ["1006","Conferido por João",plus(15)],   // futuro -> oculto
-    ["1009","Recontagem",minus(3)],           // passado -> aparece
-    ["1003","OK",""]                          // vazio -> aparece
+    ["código","obs","lembrar em","resolvido"],
+    ["1006","Conferido por João",plus(15),""],          // futuro -> oculto
+    ["1009","Recontagem",minus(3),""],                  // passado -> aparece
+    ["1003","OK","","Resolvido — conferido (exemplo)"]  // exemplo de resolvido (coluna D)
   ];
   const sn=buildSnooze(snoozeRows);
   P2_LOADED=true; P2_ERROR=false;
+  RAW.forEach(it=> it.resolvido = lookupResolved(sn.resolved, it.codigo));
   ITEMS=removeSnoozed(applyBusinessRules(compute(RAW)),sn.map);
   buildSnoozedList(RAW,sn.list);
   renderKPIs(); renderTable(); stamp(true);
@@ -1333,19 +1438,84 @@ function renderSnoozeModal(){
 function openSnooze(){ renderSnoozeModal(); document.getElementById("snoozeOverlay").classList.add("open"); document.getElementById("snoozeModal").classList.add("open"); }
 function closeSnooze(){ document.getElementById("snoozeOverlay").classList.remove("open"); document.getElementById("snoozeModal").classList.remove("open"); }
 
+/* ============ Modal: marcar resolvido (grava na coluna D via Apps Script) ============ */
+let resolveCodigo=null;
+function openResolve(codigo){
+  resolveCodigo=codigo;
+  const it=ITEMS.find(x=>String(x.codigo)===String(codigo)) || RAW.find(x=>String(x.codigo)===String(codigo));
+  document.getElementById("resolveSub").innerHTML = it ? `#${esc(it.codigo)} &middot; ${esc(it.produto)||"—"}` : `#${esc(codigo)}`;
+  document.getElementById("resolveTexto").value="";
+  document.getElementById("resolveQuem").value=cfg.quem||"";
+  const msg=document.getElementById("resolveMsg");
+  if(it && it.resolvido){
+    msg.className="resolve-msg show info";
+    msg.innerHTML=`Já consta como resolvido: <b>${esc(it.resolvido)}</b>. Gravar de novo substitui esse texto.`;
+  } else { msg.className="resolve-msg"; msg.textContent=""; }
+  document.getElementById("resolveOverlay").classList.add("open");
+  document.getElementById("resolveModal").classList.add("open");
+  setTimeout(()=>document.getElementById("resolveTexto").focus(),90);
+}
+function closeResolve(){
+  document.getElementById("resolveOverlay").classList.remove("open");
+  document.getElementById("resolveModal").classList.remove("open");
+  resolveCodigo=null;
+}
+function markResolvedLocal(codigo,registro){
+  const keys=codeKeys(codigo);
+  [ITEMS,RAW,SNOOZED_LIST].forEach(arr=>{ if(!arr) return; arr.forEach(it=>{ if(it && codeKeys(it.codigo).some(k=>keys.includes(k))) it.resolvido=registro; }); });
+}
+async function confirmResolve(){
+  if(!resolveCodigo) return;
+  const codigo=resolveCodigo;
+  const texto=document.getElementById("resolveTexto").value.trim();
+  const quem =document.getElementById("resolveQuem").value.trim();
+  const msg  =document.getElementById("resolveMsg");
+  const okBtn=document.getElementById("resolveOk");
+  cfg.quem=quem; saveCfg();
+  if(!cfg.scriptUrl){
+    msg.className="resolve-msg show err";
+    msg.innerHTML="Falta o <b>link do app da web</b> em Config para gravar.";
+    return;
+  }
+  okBtn.disabled=true; okBtn.textContent="Gravando...";
+  const carimbo=new Date().toLocaleString("pt-BR");
+  const registro=(texto||"Resolvido")+(quem?" — "+quem:"")+" ("+carimbo+")";
+  try{
+    await fetch(cfg.scriptUrl,{
+      method:"POST", mode:"no-cors",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({codigo,texto,quem})
+    });
+    markResolvedLocal(codigo,registro);     // atualização otimista
+    renderKPIs(); renderTable();
+    msg.className="resolve-msg show ok";
+    msg.innerHTML="Gravado na Página2 (coluna D). Atualizando para confirmar...";
+    setTimeout(()=>{ closeResolve(); refresh(); },2800);
+  }catch(err){
+    msg.className="resolve-msg show err";
+    msg.innerHTML="Não consegui enviar. Confira o link do app e a conexão.";
+  }finally{
+    okBtn.disabled=false; okBtn.textContent="✓ Gravar resolvido";
+  }
+}
+
 /* ============ Persistência ============ */
 function saveCfg(){try{localStorage.setItem("painelAbastCfg",JSON.stringify(cfg));}catch(e){}}
 function loadCfg(){
   try{const s=localStorage.getItem("painelAbastCfg");if(s)Object.assign(cfg,JSON.parse(s));}catch(e){}
   if(!cfg.url1) cfg.url1=DEFAULT_URL1;
   if(!cfg.url2) cfg.url2=DEFAULT_URL2;   // aplica a Página2 padrão mesmo em config salva antiga
+  if(!cfg.scriptUrl) cfg.scriptUrl=DEFAULT_SCRIPT_URL;
   document.getElementById("cfgUrl1").value=cfg.url1||"";
   document.getElementById("cfgUrl2").value=cfg.url2||"";
+  document.getElementById("cfgScript").value=cfg.scriptUrl||"";
+  document.getElementById("cfgQuem").value=cfg.quem||"";
   document.getElementById("cfgDias").value=cfg.dias;
   document.getElementById("cfgAlvo").value=cfg.alvo;
   document.getElementById("cfgCrit").value=cfg.crit;
   document.getElementById("cfgHideRes").checked=cfg.hideReservaZero!==false;
   document.getElementById("cfgHideEst").checked=cfg.hideEstoqueMenor!==false;
+  document.getElementById("cfgHideResolved").checked=cfg.hideResolved===true;
 }
 
 /* ============ Filtros por coluna (UI) ============ */
@@ -1399,17 +1569,32 @@ document.getElementById("demoBtn").addEventListener("click",()=>{closeDrawer();l
   card.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); act(e); } });
   document.getElementById("closeSnooze").addEventListener("click",closeSnooze);
   document.getElementById("snoozeOverlay").addEventListener("click",closeSnooze);
-  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeSnooze(); closeDrawer(); } });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeSnooze(); closeResolve(); closeDrawer(); } });
+})();
+
+/* --- botão Resolver (delegação) + modal resolver --- */
+(function(){
+  document.addEventListener("click",e=>{
+    const b=e.target.closest("[data-resolve]");
+    if(b) openResolve(b.getAttribute("data-resolve"));
+  });
+  document.getElementById("closeResolve").addEventListener("click",closeResolve);
+  document.getElementById("resolveCancel").addEventListener("click",closeResolve);
+  document.getElementById("resolveOverlay").addEventListener("click",closeResolve);
+  document.getElementById("resolveOk").addEventListener("click",confirmResolve);
 })();
 
 document.getElementById("saveBtn").addEventListener("click",()=>{
   cfg.url1=document.getElementById("cfgUrl1").value.trim();
   cfg.url2=document.getElementById("cfgUrl2").value.trim();
+  cfg.scriptUrl=document.getElementById("cfgScript").value.trim();
+  cfg.quem=document.getElementById("cfgQuem").value.trim();
   cfg.dias=Math.max(1,parseInt(document.getElementById("cfgDias").value)||22);
   cfg.alvo=Math.max(1,parseInt(document.getElementById("cfgAlvo").value)||30);
   cfg.crit=Math.max(0,parseInt(document.getElementById("cfgCrit").value)||5);
   cfg.hideReservaZero=document.getElementById("cfgHideRes").checked;
   cfg.hideEstoqueMenor=document.getElementById("cfgHideEst").checked;
+  cfg.hideResolved=document.getElementById("cfgHideResolved").checked;
   // overrides de colunas
   cfg.map={};
   document.querySelectorAll("#mapBox select").forEach(s=>{ if(s.value!=="") cfg.map[s.dataset.key]=parseInt(s.value); });
