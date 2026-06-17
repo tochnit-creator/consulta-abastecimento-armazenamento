@@ -287,6 +287,45 @@
   .btn-save{background:var(--navy-800);color:#fff}.btn-save:hover{background:var(--navy-700)}
   .btn-demo{background:#EDF1F6;color:var(--navy-800)}.btn-demo:hover{background:#e2e8f0}
 
+  /* ---------- Card clicável (Adiados) ---------- */
+  .kpi.clickable{cursor:pointer;transition:transform .15s ease,box-shadow .2s ease}
+  .kpi.clickable:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(16,48,73,.08),0 16px 36px rgba(16,48,73,.14)}
+  .kpi.clickable:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(22,69,107,.32)}
+  .kpi .see{display:inline-block;color:var(--navy-700);font-weight:700;margin-left:5px;white-space:nowrap}
+  .kpi.clickable:hover .see{text-decoration:underline}
+
+  /* ---------- Modal (itens adiados) ---------- */
+  .modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.97);
+    width:580px;max-width:94vw;max-height:86vh;background:#fff;border-radius:16px;z-index:100;
+    box-shadow:0 24px 70px rgba(12,34,51,.4);display:flex;flex-direction:column;overflow:hidden;
+    opacity:0;visibility:hidden;transition:transform .26s cubic-bezier(.3,.7,.3,1),opacity .22s,visibility .22s;
+  }
+  .modal.open{transform:translate(-50%,-50%) scale(1);opacity:1;visibility:visible}
+  .modal-head{background:linear-gradient(135deg,var(--navy-900),var(--navy-700));color:#fff;padding:18px 22px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+  .modal-head h2{font-size:1.1rem;margin:0;display:flex;align-items:center;gap:9px}
+  .modal-tag{font-size:.66rem;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);padding:2px 9px;border-radius:999px;letter-spacing:.03em}
+  .modal-head p{margin:5px 0 0;font-size:.8rem;color:#C6D7E6}
+  .modal-head button{background:rgba(255,255,255,.14);border:none;color:#fff;width:32px;height:32px;border-radius:8px;font-size:1.25rem;line-height:1;display:grid;place-items:center;flex:none}
+  .modal-head button:hover{background:rgba(255,255,255,.26)}
+  .modal-body{padding:14px 18px;overflow-y:auto;flex:1;background:var(--bg)}
+  .modal-foot{padding:11px 18px;border-top:1px solid var(--line);font-size:.76rem;color:var(--muted);display:flex;align-items:center;gap:8px;background:#fff}
+  .sn-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--steel);border-radius:11px;padding:11px 14px;margin-bottom:9px;box-shadow:var(--shadow-soft);animation:rowIn .35s both}
+  .sn-item.soon{border-left-color:var(--warn)}
+  .sn-item.today{border-left-color:var(--crit)}
+  .sn-main{flex:1;min-width:0}
+  .sn-cod{font-weight:700;color:var(--navy-800);font-variant-numeric:tabular-nums;font-size:.86rem}
+  .sn-prod{font-weight:600;font-size:.92rem;line-height:1.25;margin-top:1px}
+  .sn-ref{font-size:.76rem;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .sn-ref .pin svg{width:11px;height:11px;color:var(--gold);vertical-align:-1px;margin-right:2px}
+  .sn-date{text-align:right;flex:none}
+  .sn-when{font-weight:700;font-size:.82rem;color:var(--navy-800);white-space:nowrap}
+  .sn-item.soon .sn-when{color:var(--warn)}
+  .sn-item.today .sn-when{color:var(--crit)}
+  .sn-day{font-size:.74rem;color:var(--muted-2);font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap}
+  .sn-empty{text-align:center;color:var(--muted);padding:34px 16px;font-size:.88rem;line-height:1.55}
+  .sn-empty svg{width:40px;height:40px;color:var(--line-strong);margin-bottom:10px}
+
   .rule-note{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);margin:14px 2px 0;background:#F4F7FA;border:1px solid var(--line);border-radius:10px;padding:9px 13px}
   .rule-note b{color:var(--navy-800)}
   .p2-note{display:none;align-items:center;gap:8px;font-size:.78rem;margin:10px 2px 0;border-radius:10px;padding:9px 13px;border:1px solid}
@@ -430,12 +469,12 @@
       <div class="val tnum" id="kpiCrit">0</div>
       <div class="sub">cobertura baixa</div>
     </div>
-    <div class="kpi k-snooze">
+    <div class="kpi k-snooze clickable" id="kpiSnoozeCard" tabindex="0" role="button" aria-label="Ver itens adiados pela Página2 e suas datas">
       <div class="lbl">Adiados (Página2)
         <span class="info" tabindex="0">i<span class="tip">Itens marcados na <b>Página2</b> para lembrar só numa data futura. Ficam fora da análise até a data chegar (ou se a coluna C estiver vazia).</span></span>
       </div>
       <div class="val tnum" id="kpiSnooze">0</div>
-      <div class="sub">ocultos até a data</div>
+      <div class="sub">ocultos até a data <span class="see">Ver itens e datas &rarr;</span></div>
     </div>
   </section>
 
@@ -596,6 +635,20 @@
   </div>
 </aside>
 
+<!-- ===== Modal: itens adiados (Página2) ===== -->
+<div class="overlay" id="snoozeOverlay"></div>
+<div class="modal" id="snoozeModal" role="dialog" aria-modal="true" aria-label="Itens adiados pela Página2">
+  <div class="modal-head">
+    <div>
+      <h2>Itens adiados <span class="modal-tag">Página2</span></h2>
+      <p id="snoozeSub">&mdash;</p>
+    </div>
+    <button id="closeSnooze" aria-label="Fechar">&times;</button>
+  </div>
+  <div class="modal-body" id="snoozeBody"></div>
+  <div class="modal-foot" id="snoozeFoot"></div>
+</div>
+
 <script>
 "use strict";
 
@@ -626,6 +679,7 @@ const cfg = {
 let RAW = [];        // itens crus mapeados
 let ITEMS = [];      // itens processados (pós-supressão)
 let SNOOZED = 0;
+let SNOOZED_LIST = [];// itens adiados agora (com data de lembrete) — para o modal
 let SNOOZE_TOTAL = 0;// lembretes futuros encontrados na Página2
 let P2_LOADED = false;
 let P2_ERROR = false;
@@ -862,9 +916,14 @@ function applyBusinessRules(items){
 }
 
 function applySnooze(items,snooze){
-  SNOOZED=0;
+  SNOOZED=0; SNOOZED_LIST=[];
   return items.filter(it=>{
-    if(codeKeys(it.codigo).some(k=>snooze[k])){ SNOOZED++; return false; }
+    const k=codeKeys(it.codigo).find(k=>snooze[k]);
+    if(k){
+      SNOOZED++;
+      SNOOZED_LIST.push({codigo:it.codigo,produto:it.produto,referencia:it.referencia,endereco:it.endereco,date:snooze[k]});
+      return false;
+    }
     return true;
   });
 }
@@ -1224,6 +1283,45 @@ function renderMapBox(combined,map){
 function openDrawer(){document.getElementById("drawer").classList.add("open");document.getElementById("overlay").classList.add("open");}
 function closeDrawer(){document.getElementById("drawer").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
 
+/* ============ Modal: itens adiados (Página2) ============ */
+function renderSnoozeModal(){
+  const sub=document.getElementById("snoozeSub");
+  const body=document.getElementById("snoozeBody");
+  const foot=document.getElementById("snoozeFoot");
+  const today=dayOnly(new Date());
+  const list=SNOOZED_LIST.slice().sort((a,b)=>a.date-b.date);
+  if(!list.length){
+    sub.textContent="Nenhum item adiado no momento.";
+    body.innerHTML='<div class="sn-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+
+      '<div>Nenhum item está sendo adiado pela Página2 agora.<br>Quando um item tiver uma <b>data futura</b> na coluna de lembrete da Página2, ele aparece aqui — fora da análise até a data chegar.</div></div>';
+    foot.textContent="";
+    return;
+  }
+  sub.innerHTML=`${list.length} ${list.length===1?"item está oculto":"itens estão ocultos"} da análise até a data de lembrete. Ordenados do mais próximo ao mais distante.`;
+  body.innerHTML=list.map(s=>{
+    const dias=Math.round((dayOnly(s.date)-today)/86400000);
+    const when = dias<=0?"hoje":(dias===1?"amanhã":`em ${dias} dias`);
+    const cls = dias<=0?"today":(dias<=3?"soon":"");
+    const ref=[]; 
+    if(s.referencia) ref.push(esc(s.referencia));
+    if(s.endereco)   ref.push(`<span class="pin">${PIN}${esc(s.endereco)}</span>`);
+    return `<div class="sn-item ${cls}">
+      <div class="sn-main">
+        <div class="sn-cod">#${esc(s.codigo)||"—"}</div>
+        <div class="sn-prod">${esc(s.produto)||"—"}</div>
+        <div class="sn-ref">${ref.join(" &middot; ")||"&mdash;"}</div>
+      </div>
+      <div class="sn-date">
+        <div class="sn-when">lembrar ${when}</div>
+        <div class="sn-day">${dayOnly(s.date).toLocaleDateString("pt-BR")}</div>
+      </div>
+    </div>`;
+  }).join("");
+  foot.innerHTML=`<span class="info" tabindex="0">i<span class="tip">Estes itens voltam a aparecer na análise automaticamente quando a data de lembrete chegar. Para mudar, edite a coluna de data na <b>Página2</b> e clique em Atualizar.</span></span> Voltam à análise sozinhos na data indicada.`;
+}
+function openSnooze(){ renderSnoozeModal(); document.getElementById("snoozeOverlay").classList.add("open"); document.getElementById("snoozeModal").classList.add("open"); }
+function closeSnooze(){ document.getElementById("snoozeOverlay").classList.remove("open"); document.getElementById("snoozeModal").classList.remove("open"); }
+
 /* ============ Persistência ============ */
 function saveCfg(){try{localStorage.setItem("painelAbastCfg",JSON.stringify(cfg));}catch(e){}}
 function loadCfg(){
@@ -1281,6 +1379,17 @@ document.getElementById("cfgBtn").addEventListener("click",openDrawer);
 document.getElementById("closeCfg").addEventListener("click",closeDrawer);
 document.getElementById("overlay").addEventListener("click",closeDrawer);
 document.getElementById("demoBtn").addEventListener("click",()=>{closeDrawer();loadDemo(false);});
+
+/* --- card "Adiados" clicável + modal --- */
+(function(){
+  const card=document.getElementById("kpiSnoozeCard");
+  const act=e=>{ if(e.target.closest(".info")) return; openSnooze(); };
+  card.addEventListener("click",act);
+  card.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); act(e); } });
+  document.getElementById("closeSnooze").addEventListener("click",closeSnooze);
+  document.getElementById("snoozeOverlay").addEventListener("click",closeSnooze);
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeSnooze(); closeDrawer(); } });
+})();
 
 document.getElementById("saveBtn").addEventListener("click",()=>{
   cfg.url1=document.getElementById("cfgUrl1").value.trim();
