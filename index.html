@@ -122,6 +122,13 @@
   .chip.active{background:var(--navy-800);border-color:var(--navy-800);color:#fff}
   .chip .cnt{font-size:.72rem;background:rgba(0,0,0,.08);border-radius:999px;padding:1px 7px}
   .chip.active .cnt{background:rgba(255,255,255,.22)}
+  .sort-wrap{display:flex;align-items:center;gap:7px}
+  .sort-wrap label{font-size:.78rem;font-weight:600;color:var(--muted);white-space:nowrap}
+  .sort-wrap select{border:1px solid var(--line-strong);background:#fff;border-radius:9px;padding:8px 10px;font-size:.82rem;font-family:inherit;color:var(--navy-800);font-weight:600;cursor:pointer;max-width:200px}
+  .sort-wrap select:focus{outline:none;border-color:var(--navy-700);box-shadow:0 0 0 3px rgba(22,69,107,.12)}
+  .sort-dir{border:1px solid var(--line-strong);background:#fff;border-radius:9px;padding:8px 11px;font-size:.78rem;font-weight:700;color:var(--navy-800);white-space:nowrap;transition:.15s}
+  .sort-dir:hover{border-color:var(--steel);background:#F6F8FB}
+  .sort-dir:active{transform:translateY(1px)}
 
   /* ---------- Table (desktop) ---------- */
   .table-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden}
@@ -206,15 +213,19 @@
     position:relative;line-height:1;
   }
   .info:hover,.info:focus{outline:none}
-  .info .tip{
-    position:absolute;bottom:135%;left:50%;transform:translateX(-50%) translateY(4px);
-    background:var(--navy-900);color:#EAF1F8;padding:10px 13px;border-radius:9px;width:248px;
-    font-size:.76rem;font-weight:500;line-height:1.5;text-transform:none;letter-spacing:normal;
-    box-shadow:0 10px 30px rgba(12,34,51,.4);opacity:0;visibility:hidden;transition:.18s;z-index:60;text-align:left;
+  .info:focus-visible{box-shadow:0 0 0 3px rgba(31,111,178,.35)}
+  .info .tip{display:none}   /* conteúdo lido pelo JS; renderizado no #tipBox flutuante */
+  /* tooltip flutuante: posição fixa, nunca é cortado por containers */
+  #tipBox{
+    position:fixed;z-index:9999;display:none;pointer-events:none;
+    background:var(--navy-900);color:#EAF1F8;padding:10px 13px;border-radius:9px;max-width:260px;
+    font-size:.76rem;font-weight:500;line-height:1.5;text-align:left;
+    box-shadow:0 12px 34px rgba(12,34,51,.45);
   }
-  .info .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--navy-900)}
-  .info .tip b{color:var(--gold-soft)}
-  .info:hover .tip,.info:focus .tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+  #tipBox b{color:var(--gold-soft)}
+  #tipBox::after{content:"";position:absolute;left:var(--ax,50%);transform:translateX(-50%);border:6px solid transparent}
+  #tipBox.above::after{top:100%;border-top-color:var(--navy-900)}
+  #tipBox.below::after{bottom:100%;border-bottom-color:var(--navy-900)}
 
   /* ---------- Config drawer ---------- */
   .overlay{position:fixed;inset:0;background:rgba(8,22,34,.5);backdrop-filter:blur(2px);opacity:0;visibility:hidden;transition:.25s;z-index:90}
@@ -255,6 +266,11 @@
 
   .rule-note{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);margin:14px 2px 0;background:#F4F7FA;border:1px solid var(--line);border-radius:10px;padding:9px 13px}
   .rule-note b{color:var(--navy-800)}
+  .p2-note{display:none;align-items:center;gap:8px;font-size:.78rem;margin:10px 2px 0;border-radius:10px;padding:9px 13px;border:1px solid}
+  .p2-note.ok-soft{background:var(--ok-bg);border-color:#bfe2d3;color:#0a6e4b}
+  .p2-note.warn-soft{background:var(--warn-bg);border-color:#eccf93;color:#7a4e00}
+  .p2-note.err-soft{background:var(--crit-bg);border-color:#f0c2bd;color:#8a241d}
+  .p2-note b{font-weight:700}
   .updated{font-size:.78rem;color:var(--muted);margin:14px 2px 0;display:flex;align-items:center;gap:8px}
 
   footer{text-align:center;color:var(--muted-2);font-size:.76rem;padding:10px 0 0}
@@ -275,6 +291,8 @@
     .seg{justify-content:space-between}
     .chip-row{justify-content:space-between}
     .chip{flex:1;justify-content:center;padding:8px 6px;font-size:.76rem}
+    .sort-wrap{width:100%}
+    .sort-wrap select{flex:1;max-width:none}
     .status-pill{order:3}
     #refreshBtn,#cfgBtn{flex:1;justify-content:center}
   }
@@ -364,6 +382,23 @@
       <button class="chip" data-f="critico">Críticos <span class="cnt" id="cCrit">0</span></button>
       <button class="chip" data-f="ok">Saudáveis <span class="cnt" id="cOk">0</span></button>
     </div>
+    <div class="sort-wrap">
+      <label for="sortKey">Ordenar por</label>
+      <select id="sortKey">
+        <option value="prioridade">Prioridade (mais urgente)</option>
+        <option value="produto">Produto (A–Z)</option>
+        <option value="codigo">Código</option>
+        <option value="endereco">Endereço</option>
+        <option value="estoque">Estoque disponível</option>
+        <option value="reserva">Reserva p/ venda</option>
+        <option value="mediaMes">Média mês</option>
+        <option value="mediaDia">Média/dia</option>
+        <option value="ratio">Saída × média</option>
+        <option value="cobertura">Cobertura (dias)</option>
+        <option value="sug">Sugestão de compra</option>
+      </select>
+      <button class="sort-dir" id="sortDirBtn" title="Inverter a ordem">↓ maior</button>
+    </div>
   </section>
 
   <section class="table-card">
@@ -408,6 +443,11 @@
   <div class="rule-note" id="ruleNote" style="display:none">
     <span class="info" tabindex="0">i<span class="tip">Para manter o painel acionável, ocultamos itens <b>sem reserva</b> (nada saindo) e itens cujo <b>estoque é menor que a reserva</b> (não dá para repor o que já está faltando). Isso pode ser desligado em Config.</span></span>
     <span id="ruleNoteTxt"></span>
+  </div>
+
+  <div class="p2-note" id="p2Note" style="display:none">
+    <span class="info" tabindex="0">i<span class="tip">Itens com data futura na coluna C da <b>Página2</b> ficam fora do painel até a data chegar. Esta linha confirma se a Página2 está conectada e quantos lembretes ela encontrou.</span></span>
+    <span id="p2Txt"></span>
   </div>
 
   <div class="updated" id="updatedTxt"></div>
@@ -494,11 +534,16 @@ const cfg = {
 let RAW = [];        // itens crus mapeados
 let ITEMS = [];      // itens processados (pós-supressão)
 let SNOOZED = 0;
+let SNOOZE_TOTAL = 0;// lembretes futuros encontrados na Página2
+let P2_LOADED = false;
+let P2_ERROR = false;
 let HIDE_RES = 0;    // ocultos por reserva = 0
 let HIDE_EST = 0;    // ocultos por estoque < reserva
 let activeFilter = "all";
 let searchMode = "all";
 let searchTerm = "";
+let sortKey = "prioridade";
+let sortDir = "desc";
 let lastHeaders = [];
 
 /* ============ Utilidades ============ */
@@ -528,16 +573,33 @@ function parseDate(v){
   if(v==null) return null;
   let s=String(v).trim();
   if(!s) return null;
+  if(/^\d+$/.test(s)) return null;   // número puro (ex.: contador de dias) não é data
   let m;
   if((m=s.match(/Date\((\d+),(\d+),(\d+)/))) return new Date(+m[1],+m[2],+m[3]);
   if((m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return new Date(+m[1],+m[2]-1,+m[3]);
-  if((m=s.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})/))){
-    let y=+m[3]; if(y<100) y+=2000;
-    return new Date(y,+m[2]-1,+m[1]);
+  if((m=s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))){
+    let a=+m[1], b=+m[2], y=+m[3]; if(y<100) y+=2000;
+    let day,mon;
+    if(a>12){ day=a; mon=b; }       // dd/mm
+    else if(b>12){ day=b; mon=a; }  // mm/dd
+    else { day=a; mon=b; }          // ambíguo -> dd/mm (padrão BR)
+    const d=new Date(y,mon-1,day);
+    return isNaN(d.getTime())?null:d;
   }
   const d=new Date(s); return isNaN(d.getTime())?null:d;
 }
 function dayOnly(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+function codeKeys(c){
+  const s=String(c==null?"":c).trim();
+  const out=new Set();
+  if(!s) return [];
+  out.add(s); out.add(norm(s));
+  const num=s.replace(/\.0+$/,"");      // "12575.0" -> "12575"
+  out.add(num); out.add(norm(num));
+  const alnum=norm(s).replace(/[^0-9a-z]/g,"");
+  if(alnum) out.add(alnum);
+  return [...out];
+}
 
 /* CSV parser (aspas, vírgulas e quebras dentro de aspas) */
 function parseCSV(text){
@@ -618,14 +680,41 @@ function buildItems(rows){
 }
 
 function buildSnooze(rows){
-  // Página2: A=código, C=data lembrete. Supõe colunas fixas A/C.
+  // Página2: col código (A) + uma coluna de data do próximo lembrete (C).
+  // colCod vem do cabeçalho; a coluna de data é detectada pela frequência de datas válidas.
   const map={};
+  SNOOZE_TOTAL=0;
   const today=dayOnly(new Date());
-  for(const row of rows){
-    const cod=String(row[0]==null?"":row[0]).trim();
-    if(!cod || norm(cod)==="codigo" || norm(cod)==="cod") continue;
-    const d=parseDate(row[2]);
-    if(d && dayOnly(d)>today) map[cod]=dayOnly(d); // só futuro suprime
+  let hdr=-1, colCod=0;
+  for(let i=0;i<Math.min(rows.length,4);i++){
+    const r=(rows[i]||[]).map(norm);
+    const ic=r.findIndex(t=>t.includes("codigo")||t==="cod");
+    if(ic>=0){ hdr=i; colCod=ic; break; }
+  }
+  const start = hdr>=0 ? hdr+1 : 0;
+  // qual coluna tem mais datas válidas?
+  const counts={};
+  for(let i=start;i<Math.min(rows.length,start+80);i++){
+    const row=rows[i]||[];
+    for(let c=0;c<row.length;c++){
+      if(c===colCod) continue;
+      if(parseDate(row[c])) counts[c]=(counts[c]||0)+1;
+    }
+  }
+  let colDate=2, best=-1;
+  for(const c in counts){ if(counts[c]>best){ best=counts[c]; colDate=+c; } }
+  // varredura final
+  for(let i=start;i<rows.length;i++){
+    const row=rows[i]||[];
+    const cod=String(row[colCod]==null?"":row[colCod]).trim();
+    if(!cod) continue;
+    if(norm(cod)==="codigo"||norm(cod)==="cod") continue;
+    let d=parseDate(row[colDate]);
+    if(!d){ for(let c=row.length-1;c>=0;c--){ if(c===colCod) continue; const dd=parseDate(row[c]); if(dd){d=dd;break;} } }
+    if(d && dayOnly(d)>today){
+      SNOOZE_TOTAL++;
+      codeKeys(cod).forEach(k=> map[k]=dayOnly(d));
+    }
   }
   return map;
 }
@@ -665,7 +754,7 @@ function applyBusinessRules(items){
 function applySnooze(items,snooze){
   SNOOZED=0;
   return items.filter(it=>{
-    if(snooze[it.codigo]){ SNOOZED++; return false; }
+    if(codeKeys(it.codigo).some(k=>snooze[k])){ SNOOZED++; return false; }
     return true;
   });
 }
@@ -691,6 +780,21 @@ function thermo(it){
   return `<div class="thermo"><div class="track"><div class="fill ${cls}" style="width:${w}%"></div><div class="mid"></div></div><span class="ratio">${fmt(it.ratio,1)}&times;</span></div>`;
 }
 
+function sortNumVal(it,key){
+  switch(key){
+    case "ratio":     return isFinite(it.ratio)?it.ratio:1e12;
+    case "cobertura": return isFinite(it.cobertura)?it.cobertura:1e12;
+    case "mediaDia":  return it.mediaDia;
+    case "estoque":   return it.estoque;
+    case "reserva":   return it.reserva;
+    case "mediaMes":  return it.mediaMes;
+    case "sug":       return it.sug;
+    case "codigo":{ const n=parseFloat(String(it.codigo).replace(/[^\d.-]/g,"")); return isNaN(n)?null:n; }
+  }
+  return null;
+}
+const TEXT_KEYS=["produto","endereco","referencia"];
+
 function visibleItems(){
   let arr=ITEMS.slice();
   if(activeFilter==="acima") arr=arr.filter(i=>i.status==="alerta"||i.status==="critico");
@@ -705,7 +809,22 @@ function visibleItems(){
       return norm(i.produto).includes(t)||norm(i.referencia).includes(t)||norm(i.codigo).includes(t)||norm(i.endereco).includes(t);
     });
   }
-  arr.sort((a,b)=> severity(b.status)-severity(a.status) || (isFinite(b.ratio)?b.ratio:99)-(isFinite(a.ratio)?a.ratio:99));
+  arr.sort((a,b)=>{
+    if(sortKey==="prioridade"){
+      const s=severity(b.status)-severity(a.status);
+      if(s) return s;
+      return (isFinite(b.ratio)?b.ratio:1e12)-(isFinite(a.ratio)?a.ratio:1e12);
+    }
+    let res;
+    if(TEXT_KEYS.includes(sortKey)){
+      res=String(a[sortKey]||"").localeCompare(String(b[sortKey]||""),"pt",{numeric:true,sensitivity:"base"});
+    }else{
+      let av=sortNumVal(a,sortKey), bv=sortNumVal(b,sortKey);
+      if(av==null&&bv==null) res=String(a.codigo).localeCompare(String(b.codigo),"pt",{numeric:true});
+      else { av=av==null?-Infinity:av; bv=bv==null?-Infinity:bv; res=av-bv; }
+    }
+    return sortDir==="desc" ? -res : res;
+  });
   return arr;
 }
 
@@ -804,6 +923,23 @@ function renderKPIs(){
       `${fmt(oc)} ${oc===1?"item ocultado":"itens ocultados"} pelas regras: `+
       `<b>${fmt(HIDE_RES)}</b> com reserva 0 e <b>${fmt(HIDE_EST)}</b> com estoque menor que a reserva.`;
   } else { note.style.display="none"; }
+  updateP2Note();
+}
+
+function updateP2Note(){
+  const el=document.getElementById("p2Note"); if(!el) return;
+  const txt=el.querySelector("#p2Txt");
+  el.style.display="flex";
+  if(P2_ERROR){
+    el.className="p2-note err-soft";
+    txt.innerHTML="Não consegui ler a aba <b>Página2</b> — confira o link CSV dela em Config. No momento, nenhum item está sendo adiado.";
+  }else if(!P2_LOADED){
+    el.className="p2-note warn-soft";
+    txt.innerHTML="A aba <b>Página2</b> ainda não está conectada, então nenhum lembrete é aplicado. Em <b>Config</b>, cole o link CSV da Página2 (ela tem um link próprio, diferente do \"analise estoque\").";
+  }else{
+    el.className="p2-note ok-soft";
+    txt.innerHTML=`<b>Página2</b> conectada · ${fmt(SNOOZE_TOTAL)} lembrete(s) com data futura · <b>${fmt(SNOOZED)}</b> item(ns) adiado(s) agora.`;
+  }
 }
 
 function showBanner(type,html){
@@ -842,9 +978,10 @@ async function refresh(){
     if(!RAW.length) throw new Error("EMPTY");
 
     let snooze={};
+    P2_LOADED=false; P2_ERROR=false; SNOOZE_TOTAL=0;
     if(cfg.url2){
-      try{ snooze=buildSnooze(await fetchCSV(cfg.url2)); }
-      catch(e){ showBanner("warn","Os dados foram carregados, mas não consegui ler a aba <b>Página2</b> (verifique o link). A regra de itens adiados ficou desativada."); }
+      try{ snooze=buildSnooze(await fetchCSV(cfg.url2)); P2_LOADED=true; }
+      catch(e){ P2_ERROR=true; }
     }
     const all=applyBusinessRules(compute(RAW));
     ITEMS=applySnooze(all,snooze);
@@ -910,6 +1047,7 @@ function loadDemo(silent){
     ["1003","OK",""]                          // vazio -> aparece
   ];
   const snooze=buildSnooze(snoozeRows);
+  P2_LOADED=true; P2_ERROR=false;
   ITEMS=applySnooze(applyBusinessRules(compute(RAW)),snooze);
   renderKPIs(); renderTable(); stamp(true);
   setConn("Dados de exemplo",false);
@@ -980,6 +1118,26 @@ document.getElementById("filters").addEventListener("click",e=>{
   b.classList.add("active"); activeFilter=b.dataset.f; renderTable();
 });
 
+function updateSortDirBtn(){
+  const btn=document.getElementById("sortDirBtn");
+  if(sortKey==="prioridade"){ btn.style.display="none"; return; }
+  btn.style.display="";
+  const isText=TEXT_KEYS.includes(sortKey);
+  if(isText) btn.textContent = sortDir==="asc" ? "A → Z" : "Z → A";
+  else       btn.textContent = sortDir==="desc" ? "↓ maior" : "↑ menor";
+}
+document.getElementById("sortKey").addEventListener("change",e=>{
+  sortKey=e.target.value;
+  // direção padrão: texto em A→Z, números em maior→menor
+  sortDir = TEXT_KEYS.includes(sortKey) ? "asc" : "desc";
+  updateSortDirBtn(); renderTable();
+});
+document.getElementById("sortDirBtn").addEventListener("click",()=>{
+  sortDir = sortDir==="desc" ? "asc" : "desc";
+  updateSortDirBtn(); renderTable();
+});
+updateSortDirBtn();
+
 // alterna layout tabela <-> cards ao cruzar o breakpoint mobile
 let _wasMobile=isMobile();
 let _rzT;
@@ -987,6 +1145,38 @@ window.addEventListener("resize",()=>{
   clearTimeout(_rzT);
   _rzT=setTimeout(()=>{ const m=isMobile(); if(m!==_wasMobile){ _wasMobile=m; renderTable(); } },150);
 });
+
+/* ============ Tooltips flutuantes (nunca cortados) ============ */
+const tipBox=document.createElement("div");
+tipBox.id="tipBox";
+document.body.appendChild(tipBox);
+function showTip(info){
+  const tip=info.querySelector(".tip");
+  if(!tip){ return; }
+  tipBox.innerHTML=tip.innerHTML;
+  tipBox.style.display="block";
+  tipBox.classList.remove("above","below");
+  const r=info.getBoundingClientRect();
+  const bw=tipBox.offsetWidth, bh=tipBox.offsetHeight;
+  let left=r.left + r.width/2 - bw/2;
+  left=Math.max(10, Math.min(left, window.innerWidth-bw-10));
+  let top, dir;
+  if(r.top - bh - 11 >= 8){ top=r.top - bh - 11; dir="above"; }   // acima
+  else { top=r.bottom + 11; dir="below"; }                        // senão, abaixo
+  tipBox.style.left=Math.round(left)+"px";
+  tipBox.style.top=Math.round(top)+"px";
+  tipBox.classList.add(dir);
+  // alinhar a setinha com o ícone
+  const ax=r.left + r.width/2 - left;
+  tipBox.style.setProperty("--ax", Math.max(12, Math.min(ax, bw-12))+"px");
+}
+function hideTip(){ tipBox.style.display="none"; }
+document.addEventListener("mouseover",e=>{ const i=e.target.closest(".info"); if(i) showTip(i); });
+document.addEventListener("mouseout", e=>{ const i=e.target.closest(".info"); if(i) hideTip(); });
+document.addEventListener("focusin", e=>{ const i=e.target.closest(".info"); if(i) showTip(i); });
+document.addEventListener("focusout",e=>{ const i=e.target.closest(".info"); if(i) hideTip(); });
+document.addEventListener("click",   e=>{ const i=e.target.closest(".info"); if(i){ (tipBox.style.display==="block"?hideTip():showTip(i)); } });
+window.addEventListener("scroll", hideTip, true);
 
 /* ============ Início ============ */
 loadCfg();
