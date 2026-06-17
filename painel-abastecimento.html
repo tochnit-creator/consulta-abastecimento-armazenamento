@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Abastecimento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-900:#0C2233; --navy-800:#103049; --navy-700:#16456B; --steel:#37516B;
+    --gold:#C9A227; --gold-soft:#E8D9A0;
+    --bg:#EDF1F6; --surface:#FFFFFF; --line:#E3E9F0; --line-strong:#CDD7E3;
+    --ink:#0F1F2E; --muted:#5C6B7B; --muted-2:#8595A4;
+    --ok:#0E8F62; --ok-bg:#E6F4EE;
+    --warn:#C77A00; --warn-bg:#FBEFD7;
+    --crit:#C5322A; --crit-bg:#FBE6E3;
+    --info:#1F6FB2;
+    --radius:14px; --shadow:0 1px 2px rgba(16,48,73,.06), 0 8px 24px rgba(16,48,73,.07);
+    --shadow-soft:0 1px 2px rgba(16,48,73,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Sora','Inter',sans-serif;letter-spacing:-.01em}
+  .tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--navy-700)}
+
+  /* ---------- Top bar ---------- */
+  header{
+    background:linear-gradient(135deg,var(--navy-900) 0%,var(--navy-700) 100%);
+    color:#fff; padding:18px 26px;
+    box-shadow:0 6px 22px rgba(12,34,51,.28);
+    position:sticky; top:0; z-index:40;
+  }
+  .bar-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;max-width:1320px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:13px;flex:1;min-width:240px}
+  .crest{
+    width:42px;height:42px;border-radius:11px;flex:none;
+    background:linear-gradient(160deg,var(--gold),#9c7c12);
+    display:grid;place-items:center;box-shadow:0 4px 12px rgba(201,162,39,.35);
+  }
+  .crest svg{width:22px;height:22px}
+  .brand h1{font-size:1.18rem;margin:0;font-weight:700;line-height:1.1}
+  .brand p{margin:2px 0 0;font-size:.78rem;color:#AEC4D8;letter-spacing:.02em}
+  .status-pill{
+    display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.14);padding:7px 13px;border-radius:999px;
+    font-size:.78rem;color:#D6E4F0;
+  }
+  .live-dot{width:8px;height:8px;border-radius:50%;background:#3ED598;box-shadow:0 0 0 0 rgba(62,213,152,.6);animation:pulse 2.2s infinite}
+  .live-dot.off{background:#E0A800;animation:none}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(62,213,152,.55)}70%{box-shadow:0 0 0 7px rgba(62,213,152,0)}100%{box-shadow:0 0 0 0 rgba(62,213,152,0)}}
+  .btn{
+    border:none;border-radius:10px;padding:11px 18px;font-weight:600;font-size:.88rem;
+    display:inline-flex;align-items:center;gap:8px;transition:transform .12s ease,box-shadow .2s ease,background .2s;
+  }
+  .btn:active{transform:translateY(1px) scale(.985)}
+  .btn-primary{background:var(--gold);color:#241c02;box-shadow:0 4px 14px rgba(201,162,39,.4)}
+  .btn-primary:hover{background:#d8b02f}
+  .btn-ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18)}
+  .btn-ghost:hover{background:rgba(255,255,255,.18)}
+  .btn svg{width:17px;height:17px}
+  .spin{animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ---------- Layout ---------- */
+  main{max-width:1320px;margin:0 auto;padding:24px 26px 60px}
+
+  .banner{
+    display:none;align-items:flex-start;gap:12px;border-radius:12px;padding:13px 16px;margin-bottom:20px;
+    font-size:.86rem;border:1px solid;
+  }
+  .banner svg{width:18px;height:18px;flex:none;margin-top:1px}
+  .banner.show{display:flex;animation:fade .4s ease}
+  .banner.err{background:var(--crit-bg);border-color:#f0c2bd;color:#8a241d}
+  .banner.warn{background:var(--warn-bg);border-color:#eccf93;color:#7a4e00}
+  .banner.ok{background:var(--ok-bg);border-color:#bfe2d3;color:#0a6e4b}
+  .banner b{font-weight:700}
+
+  /* ---------- KPI cards ---------- */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  .kpi{
+    background:var(--surface);border-radius:var(--radius);padding:18px 18px 16px;
+    box-shadow:var(--shadow);border:1px solid var(--line);position:relative;overflow:hidden;
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .kpi:nth-child(2){animation-delay:.06s}.kpi:nth-child(3){animation-delay:.12s}.kpi:nth-child(4){animation-delay:.18s}
+  .kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .kpi.k-total::before{background:var(--navy-700)}
+  .kpi.k-alert::before{background:var(--warn)}
+  .kpi.k-crit::before{background:var(--crit)}
+  .kpi.k-snooze::before{background:var(--steel)}
+  .kpi .lbl{font-size:.76rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:6px}
+  .kpi .val{font-family:'Sora';font-size:2.1rem;font-weight:700;margin-top:7px;line-height:1}
+  .kpi .sub{font-size:.78rem;color:var(--muted-2);margin-top:6px}
+  .kpi.k-alert .val{color:var(--warn)}.kpi.k-crit .val{color:var(--crit)}
+
+  /* ---------- Controls ---------- */
+  .controls{
+    background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-soft);
+    border:1px solid var(--line);padding:14px 16px;margin-bottom:18px;
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+  }
+  .search-wrap{display:flex;align-items:center;gap:9px;flex:1;min-width:260px;
+    background:#F6F8FB;border:1px solid var(--line-strong);border-radius:10px;padding:9px 13px;transition:border .2s,box-shadow .2s}
+  .search-wrap:focus-within{border-color:var(--navy-700);box-shadow:0 0 0 3px rgba(22,69,107,.12);background:#fff}
+  .search-wrap svg{width:17px;height:17px;color:var(--muted-2)}
+  .search-wrap input{border:none;background:transparent;outline:none;font-size:.92rem;width:100%;color:var(--ink)}
+  .seg{display:flex;background:#EDF1F6;border-radius:9px;padding:3px;gap:2px}
+  .seg button{border:none;background:transparent;padding:7px 13px;border-radius:7px;font-size:.8rem;font-weight:600;color:var(--muted);transition:.15s}
+  .seg button.active{background:#fff;color:var(--navy-800);box-shadow:0 1px 3px rgba(16,48,73,.12)}
+  .chip-row{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line-strong);background:#fff;border-radius:999px;padding:7px 14px;font-size:.8rem;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:7px;transition:.15s}
+  .chip:hover{border-color:var(--steel)}
+  .chip.active{background:var(--navy-800);border-color:var(--navy-800);color:#fff}
+  .chip .cnt{font-size:.72rem;background:rgba(0,0,0,.08);border-radius:999px;padding:1px 7px}
+  .chip.active .cnt{background:rgba(255,255,255,.22)}
+
+  /* ---------- Table ---------- */
+  .table-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden}
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:980px}
+  thead th{
+    background:#F4F7FA;text-align:left;font-size:.72rem;font-weight:700;color:var(--steel);
+    text-transform:uppercase;letter-spacing:.045em;padding:13px 14px;border-bottom:2px solid var(--line-strong);
+    white-space:nowrap;position:sticky;top:0;
+  }
+  thead th .th-in{display:inline-flex;align-items:center;gap:6px}
+  th.num,td.num{text-align:right}
+  tbody td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:.88rem;vertical-align:middle}
+  tbody tr{transition:background .12s}
+  tbody tr:hover{background:#F7FAFD}
+  tbody tr:last-child td{border-bottom:none}
+  .row-anim{animation:rowIn .42s cubic-bezier(.2,.7,.3,1) both}
+  @keyframes rowIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+
+  .cod{font-weight:700;color:var(--navy-800);font-variant-numeric:tabular-nums}
+  .ref{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+  .prod{font-weight:500;max-width:280px}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;padding:4px 9px;border-radius:7px;white-space:nowrap}
+  .b-crit{background:var(--crit-bg);color:var(--crit)}
+  .b-alert{background:var(--warn-bg);color:var(--warn)}
+  .b-ok{background:var(--ok-bg);color:var(--ok)}
+  .b-neutro{background:#EEF1F5;color:var(--muted)}
+  .badge svg{width:12px;height:12px}
+
+  /* termometro */
+  .thermo{display:flex;align-items:center;gap:9px;min-width:150px}
+  .thermo .track{position:relative;flex:1;height:8px;border-radius:6px;background:#E9EEF4;overflow:hidden}
+  .thermo .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;width:0;transition:width .9s cubic-bezier(.2,.8,.25,1)}
+  .thermo .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:#fff;box-shadow:0 0 0 1px #B9C6D4}
+  .thermo .ratio{font-size:.78rem;font-weight:700;font-variant-numeric:tabular-nums;min-width:42px;text-align:right}
+  .f-crit{background:linear-gradient(90deg,#e0635b,var(--crit))}
+  .f-alert{background:linear-gradient(90deg,#e9a23c,var(--warn))}
+  .f-ok{background:linear-gradient(90deg,#3fae80,var(--ok))}
+
+  .sug{font-weight:700;font-variant-numeric:tabular-nums}
+  .sug.has{color:var(--crit)}
+  .sug.zero{color:var(--muted-2)}
+  .emb-tag{font-size:.72rem;color:var(--muted);background:#EEF1F5;border-radius:6px;padding:2px 7px;font-variant-numeric:tabular-nums}
+  .emb-frac{color:var(--info)}
+
+  .empty{padding:54px 20px;text-align:center;color:var(--muted)}
+  .empty svg{width:42px;height:42px;color:var(--line-strong);margin-bottom:10px}
+
+  /* ---------- Tooltip "!" ---------- */
+  .info{
+    display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
+    background:var(--info);color:#fff;font-size:.66rem;font-weight:800;cursor:help;flex:none;
+    position:relative;line-height:1;
+  }
+  .info:hover,.info:focus{outline:none}
+  .info .tip{
+    position:absolute;bottom:135%;left:50%;transform:translateX(-50%) translateY(4px);
+    background:var(--navy-900);color:#EAF1F8;padding:10px 13px;border-radius:9px;width:248px;
+    font-size:.76rem;font-weight:500;line-height:1.5;text-transform:none;letter-spacing:normal;
+    box-shadow:0 10px 30px rgba(12,34,51,.4);opacity:0;visibility:hidden;transition:.18s;z-index:60;text-align:left;
+  }
+  .info .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--navy-900)}
+  .info .tip b{color:var(--gold-soft)}
+  .info:hover .tip,.info:focus .tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+
+  /* ---------- Config drawer ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(8,22,34,.5);backdrop-filter:blur(2px);opacity:0;visibility:hidden;transition:.25s;z-index:90}
+  .overlay.open{opacity:1;visibility:visible}
+  .drawer{
+    position:fixed;top:0;right:0;height:100%;width:430px;max-width:92vw;background:#fff;z-index:100;
+    box-shadow:-12px 0 40px rgba(12,34,51,.25);transform:translateX(100%);transition:transform .3s cubic-bezier(.3,.7,.3,1);
+    display:flex;flex-direction:column;
+  }
+  .drawer.open{transform:none}
+  .drawer-head{background:var(--navy-800);color:#fff;padding:18px 22px;display:flex;align-items:center;justify-content:space-between}
+  .drawer-head h2{font-size:1.05rem;margin:0}
+  .drawer-head button{background:rgba(255,255,255,.12);border:none;color:#fff;width:32px;height:32px;border-radius:8px;font-size:1.1rem;display:grid;place-items:center}
+  .drawer-body{padding:20px 22px;overflow-y:auto;flex:1}
+  .fld{margin-bottom:17px}
+  .fld label{display:block;font-size:.8rem;font-weight:600;color:var(--navy-800);margin-bottom:6px}
+  .fld .hint{font-size:.74rem;color:var(--muted);margin:-2px 0 7px;line-height:1.45}
+  .fld input,.fld select{width:100%;padding:10px 12px;border:1px solid var(--line-strong);border-radius:9px;font-size:.86rem;font-family:inherit;color:var(--ink);background:#fff;transition:.15s}
+  .fld input:focus,.fld select:focus{outline:none;border-color:var(--navy-700);box-shadow:0 0 0 3px rgba(22,69,107,.12)}
+  .fld-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .sec-title{font-family:'Sora';font-size:.82rem;font-weight:700;color:var(--steel);text-transform:uppercase;letter-spacing:.05em;margin:22px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+  .sec-title:first-child{margin-top:0}
+  .map-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:center;margin-bottom:9px}
+  .map-row span{font-size:.8rem;color:var(--navy-800);font-weight:600}
+  .drawer-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;gap:10px}
+  .drawer-foot .btn{flex:1;justify-content:center}
+  .btn-save{background:var(--navy-800);color:#fff}.btn-save:hover{background:var(--navy-700)}
+  .btn-demo{background:#EDF1F6;color:var(--navy-800)}.btn-demo:hover{background:#e2e8f0}
+
+  .updated{font-size:.78rem;color:var(--muted);margin:14px 2px 0;display:flex;align-items:center;gap:8px}
+
+  footer{text-align:center;color:var(--muted-2);font-size:.76rem;padding:10px 0 0}
+
+  @media (max-width:880px){
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    main{padding:18px 14px 50px}
+    header{padding:14px 16px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar-row">
+    <div class="brand">
+      <div class="crest" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#241c02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v9a1 1 0 0 1-1 1h-4v-7H8v7H4a1 1 0 0 1-1-1z"/></svg>
+      </div>
+      <div>
+        <h1>Painel de Abastecimento</h1>
+        <p>Controle de saída acima da média &middot; reposição inteligente</p>
+      </div>
+    </div>
+    <div class="status-pill"><span class="live-dot off" id="liveDot"></span><span id="connState">Aguardando dados</span></div>
+    <button class="btn btn-ghost" id="cfgBtn" title="Configurações">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.2.62.78 1.05 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Config
+    </button>
+    <button class="btn btn-primary" id="refreshBtn">
+      <svg id="refreshIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Atualizar
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="banner" id="banner"><span id="bannerIcon"></span><div id="bannerTxt"></div></div>
+
+  <section class="kpis">
+    <div class="kpi k-total">
+      <div class="lbl">Itens analisados
+        <span class="info" tabindex="0">i<span class="tip">Total de itens lidos da aba <b>analise estoque</b>, já descontando os que estão <b>adiados</b> pela Página2.</span></span>
+      </div>
+      <div class="val tnum" id="kpiTotal">0</div>
+      <div class="sub" id="kpiTotalSub">&mdash;</div>
+    </div>
+    <div class="kpi k-alert">
+      <div class="lbl">Acima da média/dia
+        <span class="info" tabindex="0">i<span class="tip">Itens cuja <b>Reserva p/ venda</b> do dia já superou a <b>média de saída por dia</b> (média mensal ÷ dias úteis). São os que estão saindo mais rápido que o normal.</span></span>
+      </div>
+      <div class="val tnum" id="kpiAlert">0</div>
+      <div class="sub">precisam de atenção</div>
+    </div>
+    <div class="kpi k-crit">
+      <div class="lbl">Críticos p/ abastecer
+        <span class="info" tabindex="0">i<span class="tip">Estoque livre cobre menos de <b id="tipCrit">5</b> dias de venda. Risco de ruptura &mdash; priorize a compra.</span></span>
+      </div>
+      <div class="val tnum" id="kpiCrit">0</div>
+      <div class="sub">cobertura baixa</div>
+    </div>
+    <div class="kpi k-snooze">
+      <div class="lbl">Adiados (Página2)
+        <span class="info" tabindex="0">i<span class="tip">Itens marcados na <b>Página2</b> para lembrar só numa data futura. Ficam fora da análise até a data chegar (ou se a coluna C estiver vazia).</span></span>
+      </div>
+      <div class="val tnum" id="kpiSnooze">0</div>
+      <div class="sub">ocultos até a data</div>
+    </div>
+  </section>
+
+  <section class="controls">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="search" placeholder="Consultar produto, referência ou código...">
+    </div>
+    <div class="seg" id="searchMode">
+      <button data-m="all" class="active">Tudo</button>
+      <button data-m="prod">Produto</button>
+      <button data-m="ref">Referência</button>
+      <button data-m="cod">Código</button>
+    </div>
+    <div class="chip-row" id="filters">
+      <button class="chip active" data-f="all">Todos <span class="cnt" id="cAll">0</span></button>
+      <button class="chip" data-f="acima">Acima da média <span class="cnt" id="cAcima">0</span></button>
+      <button class="chip" data-f="critico">Críticos <span class="cnt" id="cCrit">0</span></button>
+      <button class="chip" data-f="ok">Saudáveis <span class="cnt" id="cOk">0</span></button>
+    </div>
+  </section>
+
+  <section class="table-card">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Situação</th>
+            <th>Código</th>
+            <th>Referência</th>
+            <th>Produto</th>
+            <th class="num">Estoque<br>disp.</th>
+            <th class="num">Reserva<br>p/ venda</th>
+            <th class="num">Média<br>mês</th>
+            <th class="num"><span class="th-in">Média/dia
+              <span class="info" tabindex="0">i<span class="tip">Média mensal ÷ <b id="tipDias">22</b> dias úteis. Ex.: 220 ÷ 22 = <b>10/dia</b>.</span></span></span></th>
+            <th><span class="th-in">Saída x média
+              <span class="info" tabindex="0">i<span class="tip">Quantas vezes a reserva do dia supera a média/dia. A marca branca no meio = <b>1× a média</b>. Passou dela, está saindo acima do normal.</span></span></span></th>
+            <th class="num"><span class="th-in">Cobertura
+              <span class="info" tabindex="0">i<span class="tip">(Estoque disp. − Reserva) ÷ média/dia. Por quantos <b>dias</b> o estoque livre ainda dura no ritmo atual.</span></span></span></th>
+            <th class="num"><span class="th-in">Sugestão
+              <span class="info" tabindex="0">i<span class="tip">Quanto comprar para cobrir <b id="tipAlvo">30</b> dias de venda, já arredondado para o múltiplo de venda (emb). <b>*</b> no emb = vende fracionado.</span></span></span></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="emptyState">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3h18v4H3z"/><path d="M5 7v13h14V7"/><path d="M9 11h6"/></svg>
+      <div>Nenhum item carregado ainda. Clique em <b>Atualizar</b> ou abra <b>Config</b> para conectar sua planilha.</div>
+    </div>
+  </section>
+
+  <div class="updated" id="updatedTxt"></div>
+  <footer>Painel gerado para a planilha "Armazenamento 1.0" &middot; abas <b>analise estoque</b> + <b>Página2</b></footer>
+</main>
+
+<!-- ===== Config Drawer ===== -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="Configurações">
+  <div class="drawer-head"><h2>Configurações</h2><button id="closeCfg" aria-label="Fechar">&times;</button></div>
+  <div class="drawer-body">
+    <div class="sec-title">Conexão com a planilha</div>
+    <div class="fld">
+      <label>Link CSV &mdash; aba "analise estoque"</label>
+      <div class="hint">No Google Sheets: <b>Arquivo &rsaquo; Compartilhar &rsaquo; Publicar na web</b> &rsaquo; escolha a aba "analise estoque" &rsaquo; formato <b>CSV</b> &rsaquo; copie o link.</div>
+      <input type="text" id="cfgUrl1" placeholder="https://docs.google.com/.../pub?output=csv">
+    </div>
+    <div class="fld">
+      <label>Link CSV &mdash; aba "Página2" <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+      <div class="hint">Repita o passo acima escolhendo a aba <b>Página2</b>. Sem ela, o painel funciona mas não esconde os itens adiados.</div>
+      <input type="text" id="cfgUrl2" placeholder="https://docs.google.com/.../pub?gid=...&single=true&output=csv">
+    </div>
+
+    <div class="sec-title">Parâmetros do cálculo</div>
+    <div class="fld-grid">
+      <div class="fld">
+        <label>Dias úteis no mês</label>
+        <div class="hint">Usado em média/dia.</div>
+        <input type="number" id="cfgDias" min="1" max="31" value="22">
+      </div>
+      <div class="fld">
+        <label>Cobertura-alvo (dias)</label>
+        <div class="hint">Meta da sugestão.</div>
+        <input type="number" id="cfgAlvo" min="1" max="120" value="30">
+      </div>
+    </div>
+    <div class="fld" style="max-width:50%">
+      <label>Limite crítico (dias)</label>
+      <div class="hint">Abaixo disso = crítico.</div>
+      <input type="number" id="cfgCrit" min="0" max="60" value="5">
+    </div>
+
+    <div class="sec-title">Ajuste de colunas <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(auto)</span></div>
+    <div class="hint" style="margin-bottom:12px">Detectado automaticamente pelos cabeçalhos. Só mexa se algum campo vier errado.</div>
+    <div id="mapBox"></div>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn btn-demo" id="demoBtn">Ver com exemplo</button>
+    <button class="btn btn-save" id="saveBtn">Salvar e atualizar</button>
+  </div>
+</aside>
+
+<script>
+"use strict";
+
+/* ============ Configuração padrão ============ */
+const DEFAULT_URL1 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2ZPsbxdrJSXeZ932d12WMRpi1yNRVx7cFXlbfEIbHSENwAhOO4K-R_KOACJBNd1WUFsamM89xPNJT/pub?output=csv";
+
+const FIELDS = [
+  {key:"estoque",   label:"Estoque (Armazenamento PPP)", kw:["armazenamento ppp","armazenamentoppp","ppp","armazenamento","estoque","disponivel","saldo","disp"]},
+  {key:"codigo",    label:"Código",             kw:["codigo","cod"]},
+  {key:"referencia",label:"Referência",         kw:["referencia","refer","ref"]},
+  {key:"produto",   label:"Produto / Descrição",kw:["produto","descricao","desc"]},
+  {key:"mediaMes",  label:"Média mensal",       kw:["mediamensal","mediames","media"]},
+  {key:"reserva",   label:"Reserva ped venda",  kw:["reserva"]},
+  {key:"emb",       label:"Emb (múltiplo)",     kw:["emb","embalagem","multiplo"]},
+];
+
+const cfg = {
+  url1: DEFAULT_URL1, url2:"",
+  dias:22, alvo:30, crit:5,
+  map:{}   // overrides manuais: key -> índice de coluna
+};
+
+let RAW = [];        // itens crus mapeados
+let ITEMS = [];      // itens processados (pós-supressão)
+let SNOOZED = 0;
+let activeFilter = "all";
+let searchMode = "all";
+let searchTerm = "";
+let lastHeaders = [];
+
+/* ============ Utilidades ============ */
+function norm(s){return (s==null?"":String(s)).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
+
+function parseNum(v){
+  if(v==null) return 0;
+  if(typeof v==="number") return v;
+  let s=String(v).trim();
+  if(!s) return 0;
+  s=s.replace(/[^\d.,-]/g,"");
+  if(s.includes(",")&&s.includes(".")){ s=s.replace(/\./g,"").replace(",","."); }
+  else if(s.includes(",")){ s=s.replace(",","."); }
+  const n=parseFloat(s);
+  return isNaN(n)?0:n;
+}
+
+function parseEmb(raw){
+  const s=(raw==null?"":String(raw)).trim();
+  const frac=s.includes("*");
+  let mult=parseNum(s.replace(/[^\d.,]/g,""));
+  if(!mult||mult<=0) mult=1;
+  return {frac, mult, raw:s||"—"};
+}
+
+function parseDate(v){
+  if(v==null) return null;
+  let s=String(v).trim();
+  if(!s) return null;
+  let m;
+  if((m=s.match(/Date\((\d+),(\d+),(\d+)/))) return new Date(+m[1],+m[2],+m[3]);
+  if((m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return new Date(+m[1],+m[2]-1,+m[3]);
+  if((m=s.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})/))){
+    let y=+m[3]; if(y<100) y+=2000;
+    return new Date(y,+m[2]-1,+m[1]);
+  }
+  const d=new Date(s); return isNaN(d.getTime())?null:d;
+}
+function dayOnly(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+
+/* CSV parser (aspas, vírgulas e quebras dentro de aspas) */
+function parseCSV(text){
+  const rows=[]; let row=[], val="", q=false;
+  text=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){val+='"';i++;} else q=false; }
+      else val+=c;
+    }else{
+      if(c==='"') q=true;
+      else if(c===","){ row.push(val); val=""; }
+      else if(c==="\n"){ row.push(val); rows.push(row); row=[]; val=""; }
+      else val+=c;
+    }
+  }
+  if(val!==""||row.length){ row.push(val); rows.push(row); }
+  return rows.filter(r=>r.some(c=>String(c).trim()!==""));
+}
+
+/* Detecta a linha de cabeçalho combinando até 2 linhas (cabeçalho dividido) */
+function detectHeader(rows){
+  const scan=Math.min(rows.length,6);
+  let best={score:-1,idx:0,combined:[]};
+  for(let h=0;h<scan;h++){
+    const cur=rows[h]||[];
+    const prev=rows[h-1]||[];
+    const combined=cur.map((c,i)=>norm((prev[i]||"")+" "+(c||"")));
+    let score=0;
+    FIELDS.forEach(f=>{ if(combined.some(t=>f.kw.some(k=>t.includes(k)))) score++; });
+    if(score>best.score) best={score,idx:h,combined};
+  }
+  return best;
+}
+
+function autoMap(combined){
+  const map={}; const used=new Set();
+  // ordem de prioridade para evitar colisões (codigo antes de "cod" genérico, etc.)
+  FIELDS.forEach(f=>{
+    let found=-1;
+    for(const kw of f.kw){
+      const i=combined.findIndex((t,idx)=>!used.has(idx)&&t.includes(kw));
+      if(i>=0){found=i;break;}
+    }
+    if(found>=0){ map[f.key]=found; used.add(found); }
+  });
+  return map;
+}
+
+/* ============ Núcleo ============ */
+function buildItems(rows){
+  const det=detectHeader(rows);
+  lastHeaders=det.combined;
+  const auto=autoMap(det.combined);
+  const map=Object.assign({},auto,cfg.map);  // overrides manuais vencem
+  renderMapBox(det.combined,map);
+
+  const items=[];
+  for(let r=det.idx+1;r<rows.length;r++){
+    const row=rows[r];
+    const get=k=> (map[k]!=null && row[map[k]]!=null) ? row[map[k]] : "";
+    const codigo=String(get("codigo")).trim();
+    const produto=String(get("produto")).trim();
+    if(!codigo && !produto) continue;            // linha vazia
+    if(norm(codigo).includes("total")) continue; // linha de total
+    items.push({
+      codigo, produto,
+      referencia:String(get("referencia")).trim(),
+      estoque:parseNum(get("estoque")),
+      mediaMes:parseNum(get("mediaMes")),
+      reserva:parseNum(get("reserva")),
+      emb:parseEmb(get("emb"))
+    });
+  }
+  return items;
+}
+
+function buildSnooze(rows){
+  // Página2: A=código, C=data lembrete. Supõe colunas fixas A/C.
+  const map={};
+  const today=dayOnly(new Date());
+  for(const row of rows){
+    const cod=String(row[0]==null?"":row[0]).trim();
+    if(!cod || norm(cod)==="codigo" || norm(cod)==="cod") continue;
+    const d=parseDate(row[2]);
+    if(d && dayOnly(d)>today) map[cod]=dayOnly(d); // só futuro suprime
+  }
+  return map;
+}
+
+function compute(items){
+  return items.map(it=>{
+    const mediaDia = cfg.dias>0 ? it.mediaMes/cfg.dias : 0;
+    const livre = it.estoque - it.reserva;
+    const ratio = mediaDia>0 ? it.reserva/mediaDia : (it.reserva>0?Infinity:0);
+    const cobertura = mediaDia>0 ? livre/mediaDia : (livre>0?Infinity:0);
+    const acima = mediaDia>0 && it.reserva>mediaDia;
+
+    let status="ok";
+    if(mediaDia<=0){ status="neutro"; }
+    else if(cobertura < cfg.crit){ status="critico"; }
+    else if(acima){ status="alerta"; }
+
+    // sugestão de compra
+    let sug=0;
+    const need = mediaDia*cfg.alvo - livre;
+    if(mediaDia>0 && need>0){
+      sug = it.emb.frac ? Math.ceil(need) : Math.ceil(need/it.emb.mult)*it.emb.mult;
+    }
+    return Object.assign({},it,{mediaDia,livre,ratio,cobertura,acima,status,sug});
+  });
+}
+
+function applySnooze(items,snooze){
+  SNOOZED=0;
+  return items.filter(it=>{
+    if(snooze[it.codigo]){ SNOOZED++; return false; }
+    return true;
+  });
+}
+
+/* ============ Render ============ */
+const fmt=(n,d=0)=> (isFinite(n)?n:0).toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
+
+function severity(s){return s==="critico"?3:s==="alerta"?2:s==="ok"?1:0;}
+
+function statusBadge(s){
+  if(s==="critico") return '<span class="badge b-crit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>Abastecer já</span>';
+  if(s==="alerta")  return '<span class="badge b-alert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Acima da média</span>';
+  if(s==="ok")      return '<span class="badge b-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Saudável</span>';
+  return '<span class="badge b-neutro">Sem histórico</span>';
+}
+
+function thermo(it){
+  if(!isFinite(it.ratio)){ // sem média mas com reserva
+    return '<div class="thermo"><div class="track"><div class="fill f-alert" style="width:100%"></div><div class="mid"></div></div><span class="ratio">&mdash;</span></div>';
+  }
+  const cls = it.status==="critico"?"f-crit":(it.acima?"f-alert":"f-ok");
+  const w = Math.max(2,Math.min(it.ratio,2)/2*100);
+  return `<div class="thermo"><div class="track"><div class="fill ${cls}" style="width:${w}%"></div><div class="mid"></div></div><span class="ratio">${fmt(it.ratio,1)}&times;</span></div>`;
+}
+
+function visibleItems(){
+  let arr=ITEMS.slice();
+  if(activeFilter==="acima") arr=arr.filter(i=>i.status==="alerta"||i.status==="critico");
+  else if(activeFilter==="critico") arr=arr.filter(i=>i.status==="critico");
+  else if(activeFilter==="ok") arr=arr.filter(i=>i.status==="ok");
+  if(searchTerm){
+    const t=norm(searchTerm);
+    arr=arr.filter(i=>{
+      if(searchMode==="prod") return norm(i.produto).includes(t);
+      if(searchMode==="ref")  return norm(i.referencia).includes(t);
+      if(searchMode==="cod")  return norm(i.codigo).includes(t);
+      return norm(i.produto).includes(t)||norm(i.referencia).includes(t)||norm(i.codigo).includes(t);
+    });
+  }
+  arr.sort((a,b)=> severity(b.status)-severity(a.status) || (isFinite(b.ratio)?b.ratio:99)-(isFinite(a.ratio)?a.ratio:99));
+  return arr;
+}
+
+function renderTable(){
+  const tb=document.getElementById("tbody");
+  const arr=visibleItems();
+  const empty=document.getElementById("emptyState");
+  if(!ITEMS.length){ tb.innerHTML=""; empty.style.display="block";
+    empty.querySelector("div").innerHTML='Nenhum item carregado ainda. Clique em <b>Atualizar</b> ou abra <b>Config</b> para conectar sua planilha.'; return; }
+  if(!arr.length){ tb.innerHTML=""; empty.style.display="block";
+    empty.querySelector("div").innerHTML="Nenhum item bate com o filtro/busca atual."; return; }
+  empty.style.display="none";
+  tb.innerHTML=arr.map((it,i)=>{
+    const sugCls=it.sug>0?"has":"zero";
+    const embCls=it.emb.frac?"emb-tag emb-frac":"emb-tag";
+    const cob = isFinite(it.cobertura)? fmt(it.cobertura,1)+" d" : "&infin;";
+    return `<tr class="row-anim" style="animation-delay:${Math.min(i*22,400)}ms">
+      <td>${statusBadge(it.status)}</td>
+      <td class="cod">${it.codigo||"—"}</td>
+      <td class="ref">${it.referencia||"—"}</td>
+      <td class="prod">${it.produto||"—"}</td>
+      <td class="num tnum">${fmt(it.estoque)}</td>
+      <td class="num tnum">${fmt(it.reserva)}</td>
+      <td class="num tnum">${fmt(it.mediaMes)}</td>
+      <td class="num tnum">${fmt(it.mediaDia,1)}</td>
+      <td>${thermo(it)}</td>
+      <td class="num tnum">${cob}</td>
+      <td class="num"><span class="sug ${sugCls}">${it.sug>0?fmt(it.sug):"—"}</span> <span class="${embCls}">${it.emb.raw}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+function animateCount(el,target){
+  const start=performance.now(), dur=650, from=0;
+  function step(t){
+    const p=Math.min((t-start)/dur,1);
+    el.textContent=Math.round(from+(target-from)*(1-Math.pow(1-p,3))).toLocaleString("pt-BR");
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderKPIs(){
+  const acima=ITEMS.filter(i=>i.status==="alerta"||i.status==="critico").length;
+  const crit=ITEMS.filter(i=>i.status==="critico").length;
+  const ok=ITEMS.filter(i=>i.status==="ok").length;
+  animateCount(document.getElementById("kpiTotal"),ITEMS.length);
+  animateCount(document.getElementById("kpiAlert"),acima);
+  animateCount(document.getElementById("kpiCrit"),crit);
+  animateCount(document.getElementById("kpiSnooze"),SNOOZED);
+  document.getElementById("kpiTotalSub").textContent = ITEMS.length? `${acima} pedindo atenção`:"—";
+  document.getElementById("cAll").textContent=ITEMS.length;
+  document.getElementById("cAcima").textContent=acima;
+  document.getElementById("cCrit").textContent=crit;
+  document.getElementById("cOk").textContent=ok;
+  document.getElementById("tipCrit").textContent=cfg.crit;
+  document.getElementById("tipDias").textContent=cfg.dias;
+  document.getElementById("tipAlvo").textContent=cfg.alvo;
+}
+
+function showBanner(type,html){
+  const b=document.getElementById("banner");
+  const icons={err:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>',
+    warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
+    ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>'};
+  b.className="banner show "+type;
+  document.getElementById("bannerIcon").innerHTML=icons[type]||"";
+  document.getElementById("bannerTxt").innerHTML=html;
+}
+function hideBanner(){document.getElementById("banner").className="banner";}
+
+function setConn(state,ok){
+  document.getElementById("connState").textContent=state;
+  document.getElementById("liveDot").className="live-dot"+(ok?"":" off");
+}
+
+/* ============ Fetch ============ */
+async function fetchCSV(url){
+  const u=url.includes("?")?url+"&_cb="+Date.now():url+"?_cb="+Date.now();
+  const res=await fetch(u,{cache:"no-store"});
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  return parseCSV(await res.text());
+}
+
+async function refresh(){
+  const icon=document.getElementById("refreshIcon");
+  icon.classList.add("spin");
+  setConn("Atualizando...",true);
+  hideBanner();
+  try{
+    if(!cfg.url1) throw new Error("NO_URL");
+    const rows=await fetchCSV(cfg.url1);
+    RAW=buildItems(rows);
+    if(!RAW.length) throw new Error("EMPTY");
+
+    let snooze={};
+    if(cfg.url2){
+      try{ snooze=buildSnooze(await fetchCSV(cfg.url2)); }
+      catch(e){ showBanner("warn","Os dados foram carregados, mas não consegui ler a aba <b>Página2</b> (verifique o link). A regra de itens adiados ficou desativada."); }
+    }
+    const all=compute(RAW);
+    ITEMS=applySnooze(all,snooze);
+    renderKPIs(); renderTable();
+    stamp(true);
+    setConn("Conectado",true);
+    if(!document.getElementById("banner").classList.contains("show")){
+      showBanner("ok","Painel atualizado com dados ao vivo da planilha.");
+      setTimeout(hideBanner,3500);
+    }
+  }catch(err){
+    setConn("Sem conexão",false);
+    handleErr(err);
+  }finally{
+    setTimeout(()=>icon.classList.remove("spin"),400);
+  }
+}
+
+function handleErr(err){
+  const msg=String(err&&err.message||err);
+  if(msg==="NO_URL"){
+    showBanner("warn","Nenhum link configurado. Abra <b>Config</b> e cole o link CSV da planilha &mdash; ou clique em <b>Ver com exemplo</b> para visualizar o painel.");
+  }else if(msg==="EMPTY"){
+    showBanner("err","O link respondeu, mas não encontrei itens. Confirme que o link aponta para a aba <b>analise estoque</b> e que ela está publicada como CSV.");
+  }else{
+    showBanner("err","Não consegui buscar os dados (<b>"+msg+"</b>). Isso costuma acontecer aqui dentro do preview do Claude. <b>Baixe este arquivo e abra no seu navegador</b> que a conexão funciona. Confira também se a planilha está publicada na web. Enquanto isso, carreguei o <b>exemplo</b> abaixo.");
+    loadDemo(true);
+  }
+}
+
+function stamp(ok){
+  const d=new Date();
+  document.getElementById("updatedTxt").innerHTML=
+    `<span class="live-dot ${ok?'':'off'}"></span> Última atualização: <b style="color:var(--ink)">&nbsp;${d.toLocaleString("pt-BR")}</b>`;
+}
+
+/* ============ Dados de exemplo ============ */
+function loadDemo(silent){
+  const today=new Date();
+  const plus=n=>{const d=new Date(today);d.setDate(d.getDate()+n);return d.toLocaleDateString("pt-BR");};
+  const minus=n=>plus(-n);
+  const demo=[
+    ["1001","REF-A100","Parafuso sextavado M8","120","220","18","50"],
+    ["1002","REF-B205","Cabo flexível 2,5mm²","35","660","40","100*"],
+    ["1003","REF-C310","Fita isolante 19mm","480","220","8","10"],
+    ["1004","REF-D415","Disjuntor 20A","22","132","9","1"],
+    ["1005","REF-E520","Tomada 2P+T 10A","300","88","3","25"],
+    ["1006","REF-F625","Lâmpada LED 9W","60","440","25","50"],
+    ["1007","REF-G730","Eletroduto 3/4\"","90","110","6","20*"],
+    ["1008","REF-H835","Conector RJ45","1500","1100","60","100"],
+    ["1009","REF-I940","Sensor de presença","12","44","5","1"],
+    ["1010","REF-J045","Caixa de luz 4x2","800","220","4","50"],
+    ["1011","REF-K150","Cabo HDMI 2m","0","66","10","5"],
+    ["1012","REF-L255","Filtro de linha 5 tomadas","240","22","0","12"]
+  ];
+  const rows=[["Armazenamento PPP","código","referência","produto","média mensal","reserva ped venda","emb"], ...demo];
+  RAW=buildItems(rows);
+  const snoozeRows=[
+    ["código","obs","lembrar em"],
+    ["1006","Conferido por João",plus(15)],   // futuro -> oculto
+    ["1009","Recontagem",minus(3)],           // passado -> aparece
+    ["1003","OK",""]                          // vazio -> aparece
+  ];
+  const snooze=buildSnooze(snoozeRows);
+  ITEMS=applySnooze(compute(RAW),snooze);
+  renderKPIs(); renderTable(); stamp(true);
+  setConn("Dados de exemplo",false);
+  if(!silent) showBanner("warn","Exibindo <b>dados de exemplo</b>. Configure o link da sua planilha para ver os números reais.");
+}
+
+/* ============ Drawer / ajuste de colunas ============ */
+function renderMapBox(combined,map){
+  const box=document.getElementById("mapBox");
+  if(!combined||!combined.length){ box.innerHTML='<div class="hint">Carregue os dados para ver as colunas detectadas.</div>'; return; }
+  const opts=combined.map((t,i)=>`<option value="${i}">${i}: ${(t||"(vazia)").slice(0,28)}</option>`).join("");
+  box.innerHTML=FIELDS.map(f=>{
+    const sel=map[f.key];
+    return `<div class="map-row"><span>${f.label}</span>
+      <select data-key="${f.key}"><option value="">— não usar —</option>${opts}</select></div>`;
+  }).join("");
+  box.querySelectorAll("select").forEach(s=>{
+    const k=s.dataset.key; if(map[k]!=null) s.value=map[k];
+  });
+}
+
+function openDrawer(){document.getElementById("drawer").classList.add("open");document.getElementById("overlay").classList.add("open");}
+function closeDrawer(){document.getElementById("drawer").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
+
+/* ============ Persistência ============ */
+function saveCfg(){try{localStorage.setItem("painelAbastCfg",JSON.stringify(cfg));}catch(e){}}
+function loadCfg(){
+  try{const s=localStorage.getItem("painelAbastCfg");if(s)Object.assign(cfg,JSON.parse(s));}catch(e){}
+  document.getElementById("cfgUrl1").value=cfg.url1||"";
+  document.getElementById("cfgUrl2").value=cfg.url2||"";
+  document.getElementById("cfgDias").value=cfg.dias;
+  document.getElementById("cfgAlvo").value=cfg.alvo;
+  document.getElementById("cfgCrit").value=cfg.crit;
+}
+
+/* ============ Eventos ============ */
+document.getElementById("refreshBtn").addEventListener("click",refresh);
+document.getElementById("cfgBtn").addEventListener("click",openDrawer);
+document.getElementById("closeCfg").addEventListener("click",closeDrawer);
+document.getElementById("overlay").addEventListener("click",closeDrawer);
+document.getElementById("demoBtn").addEventListener("click",()=>{closeDrawer();loadDemo(false);});
+
+document.getElementById("saveBtn").addEventListener("click",()=>{
+  cfg.url1=document.getElementById("cfgUrl1").value.trim();
+  cfg.url2=document.getElementById("cfgUrl2").value.trim();
+  cfg.dias=Math.max(1,parseInt(document.getElementById("cfgDias").value)||22);
+  cfg.alvo=Math.max(1,parseInt(document.getElementById("cfgAlvo").value)||30);
+  cfg.crit=Math.max(0,parseInt(document.getElementById("cfgCrit").value)||5);
+  // overrides de colunas
+  cfg.map={};
+  document.querySelectorAll("#mapBox select").forEach(s=>{ if(s.value!=="") cfg.map[s.dataset.key]=parseInt(s.value); });
+  saveCfg(); closeDrawer(); refresh();
+});
+
+document.getElementById("search").addEventListener("input",e=>{searchTerm=e.target.value;renderTable();});
+document.getElementById("searchMode").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b)return;
+  document.querySelectorAll("#searchMode button").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); searchMode=b.dataset.m; renderTable();
+});
+document.getElementById("filters").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b)return;
+  document.querySelectorAll("#filters .chip").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); activeFilter=b.dataset.f; renderTable();
+});
+
+/* ============ Início ============ */
+loadCfg();
+if(cfg.url1){ refresh(); }
+else { loadDemo(true); showBanner("warn","Cole o link CSV da sua planilha em <b>Config</b> para ver os dados reais. Abaixo, um exemplo de como o painel funciona."); }
+</script>
+</body>
+</html>
