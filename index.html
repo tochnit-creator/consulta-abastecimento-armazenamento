@@ -327,6 +327,24 @@
   .sn-empty{text-align:center;color:var(--muted);padding:34px 16px;font-size:.88rem;line-height:1.55}
   .sn-empty svg{width:40px;height:40px;color:var(--line-strong);margin-bottom:10px}
 
+  /* ---------- Sugestões por corredor ---------- */
+  .sg-card{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:11px;box-shadow:var(--shadow-soft)}
+  .sg-card:first-child{border:1.5px solid var(--gold);box-shadow:0 4px 16px rgba(180,140,30,.14)}
+  .sg-rank{font-family:'Sora','Inter',sans-serif;font-weight:800;font-size:1.15rem;color:var(--navy-800);background:#EEF3F8;border-radius:10px;width:42px;height:42px;display:grid;place-items:center;flex:none}
+  .sg-card:first-child .sg-rank{background:var(--gold);color:#3a2e05}
+  .sg-main{flex:1;min-width:0}
+  .sg-cor{font-weight:700;font-size:1rem;color:var(--navy-800)}
+  .sg-stats{font-size:.82rem;color:var(--muted);margin-top:2px}
+  .sg-stats b{color:var(--navy-800)}
+  .sg-reason{font-size:.8rem;color:var(--steel);margin-top:4px}
+  .sg-print{flex:none;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--navy-800);background:var(--navy-800);color:#fff;border-radius:9px;padding:9px 14px;font-size:.82rem;font-weight:700;cursor:pointer;transition:.14s;white-space:nowrap}
+  .sg-print:hover{background:var(--navy-700)}
+  .sg-print svg{width:15px;height:15px}
+  @media (max-width:560px){
+    .sg-card{flex-wrap:wrap}
+    .sg-print{width:100%;justify-content:center;order:3}
+  }
+
   /* ---------- Ação: Resolver / Resolvido ---------- */
   td.act{text-align:center}
   .res-btn{border:1px solid var(--navy-700);background:#fff;color:var(--navy-700);border-radius:8px;padding:6px 10px;font-size:.74rem;font-weight:700;transition:.14s;white-space:nowrap}
@@ -549,6 +567,10 @@
       </div>
     </div>
     <div class="status-pill"><span class="live-dot off" id="liveDot"></span><span id="connState">Aguardando dados</span></div>
+    <button class="btn btn-ghost" id="suggestBtn" title="Por onde começar (sugestões por corredor)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1h6c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg>
+      Sugestões
+    </button>
     <button class="btn btn-ghost" id="printBtn" title="Imprimir relatório (preto e branco)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
       Imprimir
@@ -837,6 +859,19 @@
     <button class="btn btn-demo" id="adiarCancel">Cancelar</button>
     <button class="btn btn-save" id="adiarOk">⏰ Adiar</button>
   </div>
+</div>
+
+<!-- ===== Modal: sugestões por corredor ===== -->
+<div class="overlay" id="suggestOverlay"></div>
+<div class="modal" id="suggestModal" role="dialog" aria-modal="true" aria-label="Sugestões por corredor">
+  <div class="modal-head">
+    <div>
+      <h2>Por onde começar</h2>
+      <p>Ordem sugerida pelos corredores com itens em aberto (críticos e acima da média). Cada sugestão imprime só aquele corredor, na ordem do endereço.</p>
+    </div>
+    <button id="closeSuggest" aria-label="Fechar">&times;</button>
+  </div>
+  <div class="modal-body" id="suggestBody"></div>
 </div>
 
 <script>
@@ -1974,7 +2009,7 @@ document.getElementById("demoBtn").addEventListener("click",()=>{closeDrawer();l
   card.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); act(e); } });
   document.getElementById("closeSnooze").addEventListener("click",closeSnooze);
   document.getElementById("snoozeOverlay").addEventListener("click",closeSnooze);
-  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeColMenu(); closeSnooze(); closeResolve(); closeAdiar(); closeDrawer(); } });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeColMenu(); closeSnooze(); closeResolve(); closeAdiar(); closeSuggest(); closeDrawer(); } });
 })();
 
 /* --- botões Resolver/Adiar (delegação) + modais --- */
@@ -2144,21 +2179,27 @@ printArea.id="printArea";
 printArea.setAttribute("aria-hidden","true");
 document.body.appendChild(printArea);
 
-function buildPrintReport(){
-  const arr=visibleItems();
+function buildPrintReport(opts){
+  opts=opts||{};
+  const arr=opts.items || visibleItems();
   const now=new Date();
-  const filterLabel={all:"Todos os itens",acima:"Acima da média/dia",critico:"Críticos p/ abastecer",ok:"Saudáveis"}[activeFilter]||"Todos";
-  const opTxt={gte:"≥",gt:">",lte:"≤",lt:"<",eq:"=",between:"entre",contains:"contém"};
-  const chips=[`Filtro: ${filterLabel}`];
-  if(searchTerm) chips.push(`Busca: "${searchTerm}"`);
-  colConds.filter(activeCond).forEach(c=>{
-    const meta=COLFILTERS.find(f=>f.key===c.col);
-    chips.push(c.op==="between" ? `${meta.label} entre ${c.v1} e ${c.v2}` : `${meta.label} ${opTxt[c.op]||""} ${c.v1}`);
-  });
-  if(sortKey!=="prioridade"){
-    const sk=document.querySelector(`#sortKey option[value="${sortKey}"]`);
-    chips.push(`Ordenado por: ${sk?sk.textContent:sortKey}`);
+  let chips;
+  if(opts.chips){ chips=opts.chips.slice(); }
+  else {
+    const filterLabel={all:"Todos os itens",acima:"Acima da média/dia",critico:"Críticos p/ abastecer",ok:"Saudáveis",resolvido:"Resolvidos"}[activeFilter]||"Todos";
+    chips=[`Filtro: ${filterLabel}`];
+    if(searchTerm) chips.push(`Busca: "${searchTerm}"`);
+    HEADCOLS.forEach(c=>{
+      if(!colActive(c.key)) return;
+      if(c.type==="vals"){ const sel=colVals[c.key]||[]; const labels=sel.map(v=>colValLabel(c.key,v)); chips.push(`${c.label}: ${labels.length<=2?labels.join(", "):labels.length+" selecionados"}`); }
+      else { const r=colRange[c.key]; chips.push(`${c.label}: ${(r.min!==""?r.min:"−∞")} a ${(r.max!==""?r.max:"∞")}`); }
+    });
+    if(sortKey!=="prioridade"){
+      const sk=document.querySelector(`#sortKey option[value="${sortKey}"]`);
+      chips.push(`Ordenado por: ${sk?sk.textContent:sortKey}`);
+    }
   }
+  const titulo = "Relatório de Abastecimento" + (opts.titleSuffix?` &mdash; ${esc(opts.titleSuffix)}`:"");
 
   const acima=arr.filter(i=>i.acima).length;
   const crit=arr.filter(i=>i.mediaDia>0 && i.cobertura<cfg.crit).length;
@@ -2189,7 +2230,7 @@ function buildPrintReport(){
       <div class="p-brand">
         <div class="p-logo">▦</div>
         <div>
-          <h1>Relatório de Abastecimento</h1>
+          <h1>${titulo}</h1>
           <p>Planilha "Armazenamento 1.0" &middot; análise de saída acima da média &middot; reposição inteligente</p>
         </div>
       </div>
@@ -2224,9 +2265,72 @@ function buildPrintReport(){
       Relatório gerado pelo Painel de Abastecimento.
     </div>`;
 }
-function doPrint(){ buildPrintReport(); window.print(); }
+let printOverride=null;
+function doPrint(){ printOverride=null; buildPrintReport(); window.print(); }
 document.getElementById("printBtn").addEventListener("click",doPrint);
-window.addEventListener("beforeprint",buildPrintReport); // cobre Ctrl+P direto
+window.addEventListener("beforeprint",()=>buildPrintReport(printOverride)); // cobre Ctrl+P direto
+
+/* ============ Sugestões: por qual corredor começar ============ */
+let SUGGEST_CACHE=[];
+function corridorSuggestions(){
+  // itens que precisam de ação: críticos OU acima da média, ainda não resolvidos (adiados já saíram de ITEMS)
+  const need=ITEMS.filter(i=> !i.resolvido && (i.acima || (i.mediaDia>0 && i.cobertura<cfg.crit)));
+  const byC={};
+  need.forEach(it=>{ const c=corredorOf(it); (byC[c]=byC[c]||[]).push(it); });
+  const groups=Object.keys(byC).map(c=>{
+    const items=byC[c];
+    const criticos=items.filter(i=>i.mediaDia>0 && i.cobertura<cfg.crit).length;
+    const acima=items.filter(i=>i.acima).length;
+    const totalSug=items.reduce((s,i)=>s+(i.sug>0?i.sug:0),0);
+    const minCob=Math.min.apply(null,items.map(i=>isFinite(i.cobertura)?i.cobertura:1e9));
+    return {corredor:c, items, criticos, acima, totalSug, minCob, n:items.length};
+  });
+  groups.sort((a,b)=>{
+    const an=a.corredor==="Sem endereço"?1:0, bn=b.corredor==="Sem endereço"?1:0;
+    if(an!==bn) return an-bn;                       // sem endereço por último
+    return b.criticos-a.criticos || a.minCob-b.minCob || b.n-a.n || b.totalSug-a.totalSug;
+  });
+  return groups;
+}
+function openSuggest(){
+  SUGGEST_CACHE=corridorSuggestions().slice(0,3);
+  const body=document.getElementById("suggestBody");
+  if(!SUGGEST_CACHE.length){
+    body.innerHTML='<div class="sn-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><div>Nada precisa de ação por corredor agora — nenhum item crítico ou acima da média em aberto. 🎉</div></div>';
+  }else{
+    body.innerHTML=SUGGEST_CACHE.map((g,i)=>{
+      const tot=g.totalSug>0?`comprar ~<b>${fmt(g.totalSug)}</b> un`:"sem sugestão de compra";
+      const reason = i===0
+        ? (g.criticos>0?'Maior risco de ruptura agora — <b>comece por aqui</b>.':'Mais saídas acima da média — bom ponto de partida.')
+        : 'Próximo na fila pela urgência.';
+      return `<div class="sg-card">
+        <div class="sg-rank">${i+1}º</div>
+        <div class="sg-main">
+          <div class="sg-cor">Corredor ${esc(g.corredor)}</div>
+          <div class="sg-stats"><b>${g.criticos}</b> crítico(s) &middot; <b>${g.acima}</b> acima da média &middot; ${g.n} item(ns) &middot; ${tot}</div>
+          <div class="sg-reason">${reason}</div>
+        </div>
+        <button class="sg-print" data-sug="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Imprimir sugestão ${i+1}</button>
+      </div>`;
+    }).join("");
+  }
+  document.getElementById("suggestOverlay").classList.add("open");
+  document.getElementById("suggestModal").classList.add("open");
+}
+function closeSuggest(){ document.getElementById("suggestOverlay").classList.remove("open"); document.getElementById("suggestModal").classList.remove("open"); }
+function printSuggestion(idx){
+  const g=SUGGEST_CACHE[idx]; if(!g) return;
+  const items=g.items.slice().sort((a,b)=>String(a.endereco||"").localeCompare(String(b.endereco||""),"pt",{numeric:true,sensitivity:"base"}));
+  printOverride={ items, titleSuffix:`Sugestão ${idx+1} · Corredor ${g.corredor}`,
+    chips:[`Sugestão ${idx+1}`,`Corredor ${g.corredor}`,`${g.criticos} crítico(s)`,`${g.acima} acima da média`,"itens que precisam de ação","ordem do corredor (endereço)"] };
+  buildPrintReport(printOverride); window.print(); setTimeout(()=>{printOverride=null;},600);
+}
+document.getElementById("suggestBtn").addEventListener("click",openSuggest);
+document.getElementById("closeSuggest").addEventListener("click",closeSuggest);
+document.getElementById("suggestOverlay").addEventListener("click",closeSuggest);
+document.getElementById("suggestBody").addEventListener("click",e=>{
+  const b=e.target.closest("[data-sug]"); if(b) printSuggestion(+b.dataset.sug);
+});
 
 /* ============ Tooltips flutuantes (nunca cortados) ============ */
 const tipBox=document.createElement("div");
