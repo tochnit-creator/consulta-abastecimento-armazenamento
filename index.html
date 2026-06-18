@@ -379,6 +379,70 @@
   .preset-row button:hover{border-color:var(--steel)}
   .preset-row button.on{background:var(--navy-800);border-color:var(--navy-800);color:#fff}
 
+  /* ---------- Funil no cabeçalho ---------- */
+  .th-wrap{display:inline-flex;align-items:center;gap:6px}
+  th.num .th-wrap{flex-direction:row-reverse}
+  .hf{border:none;background:transparent;color:#9fb0c0;font-size:.82rem;line-height:1;cursor:pointer;border-radius:6px;padding:2px 4px;transition:.14s;flex:none;text-transform:none}
+  .hf:hover{background:#E3EAF1;color:var(--navy-800)}
+  .hf.active{background:var(--navy-800);color:#fff}
+
+  /* ---------- Menu de coluna ---------- */
+  .colmenu-back{position:fixed;inset:0;background:rgba(12,28,45,.4);z-index:115;display:none}
+  .colmenu-back.open{display:block}
+  .colmenu{position:absolute;z-index:120;background:#fff;border:1px solid var(--line-strong);border-radius:12px;box-shadow:0 18px 50px rgba(12,34,51,.3);width:280px;display:none;font-size:.84rem;overflow:hidden}
+  .colmenu.open{display:block;animation:fade .14s}
+  .colmenu.sheet{position:fixed;left:50%!important;top:auto!important;bottom:0;transform:translateX(-50%);width:100%!important;max-width:480px;border-radius:16px 16px 0 0;max-height:82vh}
+  .colmenu.sheet.open{display:flex;flex-direction:column}
+  .cm-head2{font-weight:700;color:var(--navy-800);padding:11px 14px 0;font-size:.92rem}
+  .cm-back{border:none;background:#EEF3F8;color:var(--navy-800);font-weight:700;font-size:.82rem;padding:9px 14px;width:100%;text-align:left;cursor:pointer}
+  .cm-sort{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .cm-sortbtn{flex:1;border:1px solid var(--line-strong);background:#fff;border-radius:8px;padding:7px 6px;font-size:.76rem;font-weight:600;color:var(--navy-800);cursor:pointer;transition:.14s}
+  .cm-sortbtn:hover{background:#F4F7FA;border-color:var(--steel)}
+  .cm-body{padding:11px 12px;overflow:auto}
+  .colmenu.sheet .cm-body{flex:1}
+  .cm-search{width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;font-size:.82rem;font-family:inherit;margin-bottom:8px}
+  .cm-search:focus{outline:none;border-color:var(--navy-700);box-shadow:0 0 0 3px rgba(22,69,107,.12)}
+  .cm-allrow{display:flex;gap:14px;margin-bottom:6px}
+  .cm-link{border:none;background:transparent;color:var(--navy-700);font-weight:700;font-size:.76rem;cursor:pointer;padding:2px 0}
+  .cm-link:hover{text-decoration:underline}
+  .cm-list{max-height:230px;overflow:auto;display:flex;flex-direction:column;gap:1px}
+  .colmenu.sheet .cm-list{max-height:none}
+  .cm-chk{display:flex;align-items:center;gap:9px;padding:6px 7px;border-radius:7px;cursor:pointer;font-size:.83rem}
+  .cm-chk:hover{background:#F4F7FA}
+  .cm-chk input{width:16px;height:16px;accent-color:var(--navy-800);flex:none}
+  .cm-chk span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cm-chk b{font-weight:600;color:var(--muted-2);font-size:.74rem;font-variant-numeric:tabular-nums}
+  .cm-range{display:flex;align-items:center;gap:8px}
+  .cm-range input{flex:1;border:1px solid var(--line-strong);border-radius:8px;padding:9px 10px;font-size:.84rem;font-family:inherit;width:100%}
+  .cm-range input:focus{outline:none;border-color:var(--navy-700);box-shadow:0 0 0 3px rgba(22,69,107,.12)}
+  .cm-range span{color:var(--muted);font-size:.8rem}
+  .cm-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line);background:#FAFCFE}
+  .cm-clear{border:none;background:transparent;color:var(--crit);font-weight:700;font-size:.8rem;cursor:pointer}
+  .cm-clear:hover{text-decoration:underline}
+  .cm-ok{border:none;background:var(--navy-800);color:#fff;border-radius:8px;padding:8px 18px;font-weight:700;font-size:.82rem;cursor:pointer}
+  .cm-ok:hover{background:var(--navy-700)}
+  .cm-title{font-weight:700;color:var(--navy-800);padding:13px 14px;font-size:.95rem;border-bottom:1px solid var(--line)}
+  .cm-picks{display:flex;flex-direction:column;padding:6px;overflow:auto}
+  .cm-pick{display:flex;justify-content:space-between;align-items:center;border:none;background:transparent;text-align:left;padding:11px 12px;border-radius:8px;font-size:.9rem;font-weight:600;color:var(--navy-800);cursor:pointer}
+  .cm-pick:hover{background:#F4F7FA}
+  .cm-on{font-size:.68rem;font-weight:700;color:#fff;background:var(--gold-deep,#b8860b);border-radius:999px;padding:2px 8px}
+
+  /* ---------- Barra de filtros ativos ---------- */
+  .colbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:16px}
+  .colbar-mob{display:none;align-items:center;gap:8px;border:1px solid var(--line-strong);background:#fff;border-radius:10px;padding:9px 14px;font-size:.86rem;font-weight:700;color:var(--navy-800);cursor:pointer;width:100%;justify-content:center}
+  .colbar-mob svg{width:16px;height:16px;color:var(--steel)}
+  .colbar-chips{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .cb-chip{display:inline-flex;align-items:center;gap:7px;background:#EEF3F8;border:1px solid var(--line-strong);border-radius:999px;padding:4px 6px 4px 11px;font-size:.78rem;color:var(--navy-800)}
+  .cb-chip b{font-weight:700}
+  .cb-chip button{border:none;background:#d6e0ea;color:var(--navy-800);width:18px;height:18px;border-radius:50%;font-size:.9rem;line-height:1;cursor:pointer;display:grid;place-items:center}
+  .cb-chip button:hover{background:var(--crit);color:#fff}
+  .colbar-clear{border:1px solid var(--line-strong);background:#fff;border-radius:999px;padding:4px 13px;font-size:.78rem;font-weight:600;color:var(--crit);cursor:pointer}
+  .colbar-clear:hover{background:var(--crit-bg);border-color:#f0c2bd}
+  @media (max-width:820px){
+    .colbar-mob{display:flex}
+    .colbar{margin-bottom:14px}
+  }
+
   .rule-note{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);margin:14px 2px 0;background:#F4F7FA;border:1px solid var(--line);border-radius:10px;padding:9px 13px}
   .rule-note b{color:var(--navy-800)}
   .p2-note{display:none;align-items:center;gap:8px;font-size:.78rem;margin:10px 2px 0;border-radius:10px;padding:9px 13px;border:1px solid}
@@ -553,6 +617,7 @@
       <label for="sortKey">Ordenar por</label>
       <select id="sortKey">
         <option value="prioridade">Prioridade (mais urgente)</option>
+        <option value="status">Situação</option>
         <option value="produto">Produto (A–Z)</option>
         <option value="codigo">Código</option>
         <option value="endereco">Endereço</option>
@@ -569,20 +634,13 @@
     </div>
   </section>
 
-  <section class="colfilter" id="colFilter">
-    <div class="cf-head">
-      <button class="cf-toggle" id="cfToggle" aria-expanded="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg>
-        Filtros por coluna
-        <span class="cf-count" id="cfCount" style="display:none"></span>
-        <svg class="cf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-      </button>
-      <div class="cf-actions" id="cfActions" style="display:none">
-        <button class="cf-add" id="cfAdd">+ Adicionar filtro</button>
-        <button class="cf-clear" id="cfClear">Limpar</button>
-      </div>
-    </div>
-    <div class="cf-body" id="cfBody" style="display:none"></div>
+  <section class="colbar" id="colBar">
+    <button class="colbar-mob" id="colMobBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg>
+      Filtrar e ordenar colunas
+    </button>
+    <div class="colbar-chips" id="colBarChips"></div>
+    <button class="colbar-clear" id="colBarClear" style="display:none">Limpar filtros</button>
   </section>
 
   <section class="table-card">
@@ -595,23 +653,23 @@
         </colgroup>
         <thead>
           <tr>
-            <th>Situação</th>
-            <th>Código</th>
-            <th>Referência</th>
-            <th><span class="th-in">Endereço
-              <span class="info" tabindex="0">i<span class="tip">Endereço do produto no armazém (coluna <b>Armazenamento PPP</b>) &mdash; onde encontrar o item para separação ou reposição.</span></span></span></th>
-            <th>Produto</th>
-            <th class="num">Estoque<br>disp.</th>
-            <th class="num">Reserva<br>p/ venda</th>
-            <th class="num">Média<br>mês</th>
-            <th class="num"><span class="th-in">Média/dia
-              <span class="info" tabindex="0">i<span class="tip">Média mensal ÷ <b id="tipDias">22</b> dias úteis. Ex.: 220 ÷ 22 = <b>10/dia</b>.</span></span></span></th>
-            <th><span class="th-in">Saída x média
-              <span class="info" tabindex="0">i<span class="tip">Quantas vezes a reserva do dia supera a média/dia. A marca branca no meio = <b>1× a média</b>. Passou dela, está saindo acima do normal.</span></span></span></th>
-            <th class="num"><span class="th-in">Cobertura
-              <span class="info" tabindex="0">i<span class="tip">(Estoque disp. − Reserva) ÷ média/dia. Por quantos <b>dias</b> o estoque livre ainda dura no ritmo atual.</span></span></span></th>
-            <th class="num"><span class="th-in">Sugestão
-              <span class="info" tabindex="0">i<span class="tip">Quanto comprar para cobrir <b id="tipAlvo">30</b> dias de venda, já arredondado para o múltiplo de venda (emb). <b>*</b> no emb = vende fracionado.</span></span></span></th>
+            <th><span class="th-wrap"><span>Situação</span><button class="hf" data-col="status" aria-label="Filtrar e ordenar Situação">▾</button></span></th>
+            <th><span class="th-wrap"><span>Código</span><button class="hf" data-col="codigo" aria-label="Filtrar e ordenar Código">▾</button></span></th>
+            <th><span class="th-wrap"><span>Referência</span><button class="hf" data-col="referencia" aria-label="Filtrar e ordenar Referência">▾</button></span></th>
+            <th><span class="th-wrap"><span class="th-in">Endereço
+              <span class="info" tabindex="0">i<span class="tip">Endereço do produto no armazém (coluna <b>Armazenamento PPP</b>) &mdash; onde encontrar o item para separação ou reposição.</span></span></span><button class="hf" data-col="endereco" aria-label="Filtrar e ordenar Endereço">▾</button></span></th>
+            <th><span class="th-wrap"><span>Produto</span><button class="hf" data-col="produto" aria-label="Filtrar e ordenar Produto">▾</button></span></th>
+            <th class="num"><span class="th-wrap"><span>Estoque<br>disp.</span><button class="hf" data-col="estoque" aria-label="Filtrar e ordenar Estoque">▾</button></span></th>
+            <th class="num"><span class="th-wrap"><span>Reserva<br>p/ venda</span><button class="hf" data-col="reserva" aria-label="Filtrar e ordenar Reserva">▾</button></span></th>
+            <th class="num"><span class="th-wrap"><span>Média<br>mês</span><button class="hf" data-col="mediaMes" aria-label="Filtrar e ordenar Média mês">▾</button></span></th>
+            <th class="num"><span class="th-wrap"><span class="th-in">Média/dia
+              <span class="info" tabindex="0">i<span class="tip">Média mensal ÷ <b id="tipDias">22</b> dias úteis. Ex.: 220 ÷ 22 = <b>10/dia</b>.</span></span></span><button class="hf" data-col="mediaDia" aria-label="Filtrar e ordenar Média/dia">▾</button></span></th>
+            <th><span class="th-wrap"><span class="th-in">Saída x média
+              <span class="info" tabindex="0">i<span class="tip">Quantas vezes a reserva do dia supera a média/dia. A marca branca no meio = <b>1× a média</b>. Passou dela, está saindo acima do normal.</span></span></span><button class="hf" data-col="ratio" aria-label="Filtrar e ordenar Saída x média">▾</button></span></th>
+            <th class="num"><span class="th-wrap"><span class="th-in">Cobertura
+              <span class="info" tabindex="0">i<span class="tip">(Estoque disp. − Reserva) ÷ média/dia. Por quantos <b>dias</b> o estoque livre ainda dura no ritmo atual.</span></span></span><button class="hf" data-col="cobertura" aria-label="Filtrar e ordenar Cobertura">▾</button></span></th>
+            <th class="num"><span class="th-wrap"><span class="th-in">Sugestão
+              <span class="info" tabindex="0">i<span class="tip">Quanto comprar para cobrir <b id="tipAlvo">30</b> dias de venda, já arredondado para o múltiplo de venda (emb). <b>*</b> no emb = vende fracionado.</span></span></span><button class="hf" data-col="sug" aria-label="Filtrar e ordenar Sugestão">▾</button></span></th>
             <th><span class="th-in">Resolver
               <span class="info" tabindex="0">i<span class="tip">Marque o item como <b>resolvido</b> enquanto trabalha. Grava na <b>coluna D da Página2</b> (com data e quem), fica visível para todos com o link e some/ marca aqui.</span></span></span></th>
           </tr>
@@ -841,7 +899,33 @@ const COLFILTERS = [
 ];
 const OPS_NUM=[["gte","≥ maior ou igual"],["gt","> maior que"],["lte","≤ menor ou igual"],["lt","< menor que"],["eq","= igual a"],["between","está entre"]];
 const OPS_TXT=[["contains","contém"],["eq","é igual a"]];
-let colConds=[];   // {col, op, v1, v2}
+let colConds=[];   // (legado, não usado pela nova UI)
+
+/* ---- Filtros por coluna no cabeçalho (estilo Google Sheets) ---- */
+const HEADCOLS=[
+  {key:"status",    label:"Situação",       type:"vals"},
+  {key:"codigo",    label:"Código",         type:"vals"},
+  {key:"referencia",label:"Referência",     type:"vals"},
+  {key:"endereco",  label:"Endereço",       type:"vals"},
+  {key:"produto",   label:"Produto",        type:"vals"},
+  {key:"estoque",   label:"Estoque disp.",  type:"num"},
+  {key:"reserva",   label:"Reserva p/ venda",type:"num"},
+  {key:"mediaMes",  label:"Média mês",      type:"num"},
+  {key:"mediaDia",  label:"Média/dia",      type:"num"},
+  {key:"ratio",     label:"Saída × média",  type:"num"},
+  {key:"cobertura", label:"Cobertura (dias)",type:"num"},
+  {key:"sug",       label:"Sugestão",       type:"num"},
+];
+const STATUS_LABELS={critico:"Abastecer já",alerta:"Acima da média",ok:"Saudável",neutro:"Sem histórico"};
+let colVals={};    // key -> array de valores marcados (texto). ausente/[] sem marcação = sem filtro
+let colRange={};   // key -> {min:"",max:""} (número)
+function colValOf(it,key){ return key==="status" ? String(it.status||"") : String(it[key]==null?"":it[key]); }
+function colValLabel(key,v){ return key==="status" ? (STATUS_LABELS[v]||v||"(vazio)") : (v||"(vazio)"); }
+function colActive(key){
+  const c=HEADCOLS.find(h=>h.key===key); if(!c) return false;
+  if(c.type==="vals"){ const s=colVals[key]; return !!(s && s.length); }
+  const r=colRange[key]; return !!(r && (r.min!=="" || r.max!==""));
+}
 
 /* ============ Utilidades ============ */
 function norm(s){return (s==null?"":String(s)).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
@@ -1105,6 +1189,7 @@ function thermo(it){
 
 function sortNumVal(it,key){
   switch(key){
+    case "status":    return severity(it.status);
     case "ratio":     return isFinite(it.ratio)?it.ratio:1e12;
     case "cobertura": return isFinite(it.cobertura)?it.cobertura:1e12;
     case "mediaDia":  return it.mediaDia;
@@ -1144,9 +1229,20 @@ function visibleItems(){
       return norm(i.produto).includes(t)||norm(i.referencia).includes(t)||norm(i.codigo).includes(t)||norm(i.endereco).includes(t);
     });
   }
-  // filtros por coluna (combinados em E, como o filtro de uma planilha)
-  const conds=colConds.filter(activeCond);
-  if(conds.length) arr=arr.filter(it=>conds.every(c=>matchCond(it,c)));
+  // filtros por coluna (estilo planilha): valores marcados (texto) ou faixa de/até (número)
+  HEADCOLS.forEach(c=>{
+    if(c.type==="vals"){
+      const sel=colVals[c.key];
+      if(sel && sel.length) arr=arr.filter(it=>sel.includes(colValOf(it,c.key)));
+    }else{
+      const r=colRange[c.key];
+      if(r && (r.min!=="" || r.max!=="")){
+        const lo=r.min===""?-Infinity:parseNum(r.min);
+        const hi=r.max===""? Infinity:parseNum(r.max);
+        arr=arr.filter(it=>{ let v=Number(it[c.key]); if(v===Infinity)v=1e12; else if(!isFinite(v))v=0; return v>=lo && v<=hi; });
+      }
+    }
+  });
   if(groupByAddr){
     // roteiro: ordena por corredor e, dentro dele, pelo endereço completo
     arr.sort((a,b)=>{
@@ -1269,6 +1365,7 @@ function cardHTML(it,i){
 }
 
 function renderTable(){
+  if(typeof refreshFunnels==="function"){ refreshFunnels(); renderColBar(); }
   const tb=document.getElementById("tbody");
   const cards=document.getElementById("cards");
   const empty=document.getElementById("emptyState");
@@ -1668,6 +1765,142 @@ function applyFilter(f){
   const c=document.querySelector(".controls"); if(c) c.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
+/* ============ Menu de coluna (filtro + ordenação estilo planilha) ============ */
+let colMenu=null, colBack=null, menuKey=null, menuMobile=false;
+function ensureColMenu(){
+  if(colMenu) return colMenu;
+  colBack=document.createElement("div"); colBack.id="colMenuBack"; colBack.className="colmenu-back";
+  colBack.addEventListener("click",closeColMenu);
+  document.body.appendChild(colBack);
+  colMenu=document.createElement("div");
+  colMenu.id="colMenu"; colMenu.className="colmenu";
+  document.body.appendChild(colMenu);
+  return colMenu;
+}
+function distinctVals(key){
+  const set=new Map();
+  ITEMS.forEach(it=>{ const v=colValOf(it,key); set.set(v,(set.get(v)||0)+1); });
+  let arr=[...set.keys()];
+  if(key==="status"){ const order=["critico","alerta","ok","neutro"]; arr.sort((a,b)=>order.indexOf(a)-order.indexOf(b)); }
+  else arr.sort((a,b)=>String(a).localeCompare(String(b),"pt",{numeric:true,sensitivity:"base"}));
+  return arr.map(v=>({v,label:colValLabel(key,v),count:set.get(v)}));
+}
+function chooserHTML(){
+  const rows=HEADCOLS.map(c=>`<button class="cm-pick" data-pick="${c.key}">${esc(c.label)}${colActive(c.key)?'<span class="cm-on">filtrada</span>':''}</button>`).join("");
+  return `<div class="cm-title">Filtrar / ordenar coluna</div><div class="cm-picks">${rows}</div>`;
+}
+function colMenuHTML(key,withBack){
+  const c=HEADCOLS.find(h=>h.key===key);
+  const back = withBack ? `<button class="cm-back" data-back="1">‹ Colunas</button>` : "";
+  const sortAsc = key==="status" ? "↑ Menos urgente" : (c.type==="num"?"↑ Menor → maior":"↑ A → Z");
+  const sortDesc= key==="status" ? "↓ Mais urgente" : (c.type==="num"?"↓ Maior → menor":"↓ Z → A");
+  let body="";
+  if(c.type==="vals"){
+    const sel=colVals[key]||null;
+    const opts=distinctVals(key);
+    const rows=opts.map(o=>{
+      const checked = sel===null || sel.includes(o.v);
+      return `<label class="cm-chk"><input type="checkbox" data-v="${esc(o.v)}" ${checked?"checked":""}><span>${esc(o.label)}</span><b>${o.count}</b></label>`;
+    }).join("");
+    body=`<input type="text" class="cm-search" placeholder="Buscar valor...">
+      <div class="cm-allrow"><button class="cm-link" data-all="1">Marcar todos</button><button class="cm-link" data-all="0">Limpar</button></div>
+      <div class="cm-list">${rows}</div>`;
+  }else{
+    const r=colRange[key]||{min:"",max:""};
+    body=`<div class="cm-range">
+      <input type="text" inputmode="decimal" class="cm-min" placeholder="de" value="${esc(r.min||"")}">
+      <span>até</span>
+      <input type="text" inputmode="decimal" class="cm-max" placeholder="até" value="${esc(r.max||"")}">
+    </div>`;
+  }
+  return `${back}<div class="cm-head2">${esc(c.label)}</div>
+    <div class="cm-sort">
+      <button class="cm-sortbtn" data-dir="asc">${sortAsc}</button>
+      <button class="cm-sortbtn" data-dir="desc">${sortDesc}</button>
+    </div>
+    <div class="cm-body">${body}</div>
+    <div class="cm-foot"><button class="cm-clear" data-clear="1">Limpar coluna</button><button class="cm-ok" data-ok="1">Pronto</button></div>`;
+}
+function openChooserMobile(){
+  menuMobile=true; menuKey=null;
+  const m=ensureColMenu();
+  m.innerHTML=chooserHTML();
+  m.classList.add("open","sheet"); colBack.classList.add("open");
+  centerMenu();
+}
+function openColMenu(key,anchor){
+  menuKey=key;
+  menuMobile=!anchor;
+  const m=ensureColMenu();
+  m.innerHTML=colMenuHTML(key,menuMobile);
+  m.classList.add("open");
+  m.classList.toggle("sheet",menuMobile);
+  if(menuMobile){ colBack.classList.add("open"); centerMenu(); }
+  else { colBack.classList.remove("open"); positionColMenu(anchor); }
+  const s=m.querySelector(".cm-search"); if(s && !menuMobile) setTimeout(()=>s.focus(),60);
+}
+function centerMenu(){ const m=colMenu; if(!m) return; m.style.left=""; m.style.top=""; m.style.width=""; }
+function positionColMenu(anchor){
+  const m=colMenu; if(!m||!anchor) return;
+  const r=anchor.getBoundingClientRect();
+  const mw=Math.min(280, window.innerWidth-20);
+  m.style.width=mw+"px";
+  let left=r.left+window.scrollX;
+  if(left+mw>window.scrollX+window.innerWidth-10) left=window.scrollX+window.innerWidth-mw-10;
+  if(left<window.scrollX+8) left=window.scrollX+8;
+  m.style.left=left+"px";
+  m.style.top=(r.bottom+window.scrollY+6)+"px";
+}
+function closeColMenu(){ if(colMenu){ colMenu.classList.remove("open","sheet"); } if(colBack) colBack.classList.remove("open"); menuKey=null; menuMobile=false; }
+function setColSort(key,dir){
+  sortKey=key; sortDir=dir;
+  const sk=document.getElementById("sortKey"); if(sk && [...sk.options].some(o=>o.value===key)) sk.value=key;
+  updateSortDirBtn(); renderTable();
+}
+function commitColVals(key){
+  // lê as caixas marcadas no menu e atualiza o modelo
+  if(!colMenu) return;
+  const boxes=[...colMenu.querySelectorAll(".cm-list input[type=checkbox]")];
+  const total=distinctVals(key).length;
+  const checked=boxes.filter(b=>b.checked).map(b=>b.getAttribute("data-v"));
+  if(checked.length===total || checked.length===0) delete colVals[key];  // todos ou nenhum = sem filtro
+  else colVals[key]=checked;                                              // subconjunto
+  afterColChange();
+}
+function commitColRange(key){
+  if(!colMenu) return;
+  const min=colMenu.querySelector(".cm-min").value.trim();
+  const max=colMenu.querySelector(".cm-max").value.trim();
+  if(min==="" && max==="") delete colRange[key]; else colRange[key]={min,max};
+  afterColChange();
+}
+function clearCol(key){ delete colVals[key]; delete colRange[key]; afterColChange(); }
+function clearAllCols(){ colVals={}; colRange={}; afterColChange(); }
+function afterColChange(){ renderTable(); refreshFunnels(); renderColBar(); }
+function refreshFunnels(){
+  document.querySelectorAll(".hf").forEach(b=>b.classList.toggle("active",colActive(b.dataset.col)));
+}
+function renderColBar(){
+  const chipsEl=document.getElementById("colBarChips");
+  const clearBtn=document.getElementById("colBarClear");
+  const chips=[];
+  HEADCOLS.forEach(c=>{
+    if(!colActive(c.key)) return;
+    let desc="";
+    if(c.type==="vals"){
+      const sel=colVals[c.key]||[];
+      const labels=sel.map(v=>colValLabel(c.key,v));
+      desc = labels.length<=2 ? labels.join(", ") : `${labels.length} selecionados`;
+    }else{
+      const r=colRange[c.key];
+      desc = (r.min!==""?r.min:"−∞")+" a "+(r.max!==""?r.max:"∞");
+    }
+    chips.push(`<span class="cb-chip"><b>${esc(c.label)}:</b> ${esc(desc)} <button data-clearcol="${c.key}" aria-label="Remover filtro">&times;</button></span>`);
+  });
+  chipsEl.innerHTML=chips.join("");
+  clearBtn.style.display=chips.length?"":"none";
+}
+
 /* ============ Persistência ============ */
 function saveCfg(){try{localStorage.setItem("painelAbastCfg",JSON.stringify(cfg));}catch(e){}}
 function loadCfg(){
@@ -1738,7 +1971,7 @@ document.getElementById("demoBtn").addEventListener("click",()=>{closeDrawer();l
   card.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); act(e); } });
   document.getElementById("closeSnooze").addEventListener("click",closeSnooze);
   document.getElementById("snoozeOverlay").addEventListener("click",closeSnooze);
-  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeSnooze(); closeResolve(); closeAdiar(); closeDrawer(); } });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeColMenu(); closeSnooze(); closeResolve(); closeAdiar(); closeDrawer(); } });
 })();
 
 /* --- botões Resolver/Adiar (delegação) + modais --- */
@@ -1785,6 +2018,60 @@ document.getElementById("routeBtn").addEventListener("click",()=>{
   renderTable();
 });
 
+/* --- funil no cabeçalho + menu de coluna --- */
+(function(){
+  // abre o menu ao clicar no funil
+  document.addEventListener("click",e=>{
+    const hf=e.target.closest(".hf");
+    if(hf){ e.stopPropagation();
+      if(menuKey===hf.dataset.col && colMenu && colMenu.classList.contains("open")){ closeColMenu(); }
+      else openColMenu(hf.dataset.col,hf);
+      return;
+    }
+    // fechar ao clicar fora
+    if(colMenu && colMenu.classList.contains("open") && !e.target.closest("#colMenu")) closeColMenu();
+  });
+  // interações dentro do menu
+  document.addEventListener("input",e=>{
+    if(!colMenu || !colMenu.contains(e.target) || !menuKey) return;
+    if(e.target.classList.contains("cm-search")){
+      const q=norm(e.target.value);
+      colMenu.querySelectorAll(".cm-list .cm-chk").forEach(l=>{
+        const t=norm(l.querySelector("span").textContent);
+        l.style.display=t.includes(q)?"":"none";
+      });
+    }else if(e.target.matches(".cm-min,.cm-max")){
+      commitColRange(menuKey);
+    }else if(e.target.matches(".cm-list input[type=checkbox]")){
+      commitColVals(menuKey);
+    }
+  });
+  document.addEventListener("click",e=>{
+    if(!colMenu || !colMenu.contains(e.target) || (!menuKey && !colMenu.classList.contains("sheet"))) return;
+    const pick=e.target.closest("[data-pick]"); if(pick){ openColMenu(pick.dataset.pick,null); return; }
+    const back=e.target.closest("[data-back]"); if(back){ openChooserMobile(); return; }
+    if(!menuKey) return;
+    const sb=e.target.closest(".cm-sortbtn"); if(sb){ setColSort(menuKey,sb.dataset.dir); closeColMenu(); return; }
+    const all=e.target.closest("[data-all]");
+    if(all){
+      colMenu.querySelectorAll(".cm-list .cm-chk:not([style*='none']) input").forEach(b=>{ b.checked = all.dataset.all==="1"; });
+      commitColVals(menuKey); return;
+    }
+    if(e.target.closest("[data-clear]")){ clearCol(menuKey); closeColMenu(); return; }
+    if(e.target.closest("[data-ok]")){ closeColMenu(); return; }
+  });
+  window.addEventListener("resize",()=>{ if(colMenu && colMenu.classList.contains("open") && !menuMobile){ const a=document.querySelector(`.hf[data-col="${menuKey}"]`); positionColMenu(a); } });
+  const tbl=document.querySelector(".tbl-desktop"); if(tbl) tbl.addEventListener("scroll",()=>{ if(colMenu && colMenu.classList.contains("open") && !menuMobile) closeColMenu(); });
+
+  // barra: remover filtro de uma coluna / limpar tudo / abrir seletor no mobile
+  document.getElementById("colBarChips").addEventListener("click",e=>{
+    const b=e.target.closest("[data-clearcol]"); if(b) clearCol(b.dataset.clearcol);
+  });
+  document.getElementById("colBarClear").addEventListener("click",clearAllCols);
+  document.getElementById("colMobBtn").addEventListener("click",e=>{ e.stopPropagation(); openChooserMobile(); });
+})();
+
+
 
 document.getElementById("saveBtn").addEventListener("click",()=>{
   cfg.url1=document.getElementById("cfgUrl1").value.trim();
@@ -1815,39 +2102,7 @@ document.getElementById("filters").addEventListener("click",e=>{
   b.classList.add("active"); activeFilter=b.dataset.f; renderTable();
 });
 
-/* --- filtros por coluna --- */
-document.getElementById("cfToggle").addEventListener("click",()=>{
-  setColFilterOpen(document.getElementById("cfBody").style.display==="none");
-});
-document.getElementById("cfAdd").addEventListener("click",()=>{
-  colConds.push({col:"reserva",op:"gte",v1:"",v2:""});
-  renderColFilter();
-});
-document.getElementById("cfClear").addEventListener("click",()=>{
-  colConds=[]; renderColFilter(); renderTable();
-});
-document.getElementById("cfBody").addEventListener("input",e=>{
-  const el=e.target; if(el.dataset.i==null) return;
-  const i=+el.dataset.i, fld=el.dataset.fld;
-  if(!colConds[i]) return;
-  colConds[i][fld]=el.value;
-  if(fld==="col"){
-    const meta=COLFILTERS.find(f=>f.key===el.value);
-    const valid=(meta.type==="text"?OPS_TXT:OPS_NUM).map(o=>o[0]);
-    if(!valid.includes(colConds[i].op)) colConds[i].op=valid[0];
-    renderColFilter();          // muda o tipo -> reconstrói (operadores diferentes)
-  }else if(fld==="op"){
-    renderColFilter();          // "entre" adiciona/remove o 2º campo
-  }else{
-    updateCfCount();            // digitando valor: mantém o foco, só atualiza contador
-  }
-  renderTable();
-});
-document.getElementById("cfBody").addEventListener("click",e=>{
-  const d=e.target.closest("[data-del]"); if(!d) return;
-  colConds.splice(+d.dataset.del,1); renderColFilter(); renderTable();
-});
-renderColFilter();
+/* (painel antigo de condições removido — agora os filtros ficam no cabeçalho de cada coluna) */
 
 function updateSortDirBtn(){
   const btn=document.getElementById("sortDirBtn");
