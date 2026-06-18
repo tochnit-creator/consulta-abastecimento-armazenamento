@@ -155,8 +155,8 @@
 
   /* ---------- Table (desktop) ---------- */
   .table-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden}
-  .tbl-desktop{max-height:74vh;overflow:auto}
-  table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:1240px}
+  .tbl-desktop{max-height:74vh;overflow-y:auto;overflow-x:hidden}
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
   thead th{
     background:#F4F7FA;text-align:left;font-size:.62rem;font-weight:700;color:var(--steel);
     text-transform:uppercase;letter-spacing:0;padding:11px 22px 11px 8px;border-bottom:2px solid var(--line-strong);
@@ -174,9 +174,9 @@
   @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   /* larguras fixas p/ caber tudo em uma tela */
-  col.c-sit{width:7.5%}col.c-cod{width:6%}col.c-ref{width:7.5%}col.c-addr{width:6.5%}
-  col.c-prod{width:auto}col.c-est{width:6%}col.c-res{width:6.5%}col.c-mm{width:6%}
-  col.c-md{width:6%}col.c-term{width:7%}col.c-cob{width:7%}col.c-sug{width:7%}col.c-act{width:7%}
+  col.c-sit{width:9%}col.c-cod{width:7%}col.c-ref{width:9%}col.c-addr{width:8%}
+  col.c-prod{width:auto}col.c-est{width:7.5%}col.c-res{width:8%}
+  col.c-md{width:7.5%}col.c-cob{width:8.5%}col.c-act{width:10%}
 
   .cod{font-weight:700;color:var(--navy-800);font-variant-numeric:tabular-nums}
   .ref{font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
@@ -328,16 +328,24 @@
   .sn-empty svg{width:40px;height:40px;color:var(--line-strong);margin-bottom:10px}
 
   /* ---------- Sugestões por corredor ---------- */
-  .sg-card{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:11px;box-shadow:var(--shadow-soft)}
-  .sg-card:first-child{border:1.5px solid var(--gold);box-shadow:0 4px 16px rgba(180,140,30,.14)}
-  .sg-rank{font-family:'Sora','Inter',sans-serif;font-weight:800;font-size:1.15rem;color:var(--navy-800);background:#EEF3F8;border-radius:10px;width:42px;height:42px;display:grid;place-items:center;flex:none}
-  .sg-card:first-child .sg-rank{background:var(--gold);color:#3a2e05}
+  .sg-summary{padding:13px 22px;background:var(--navy-900);color:#dbe7f2;font-size:.86rem;border-bottom:1px solid rgba(255,255,255,.08)}
+  .sg-summary .sg-sum-n{color:#fff;font-weight:800;font-family:'Sora','Inter',sans-serif}
+  .sg-actions{padding:12px 22px 0}
+  .sg-actions:empty{display:none}
+  .sg-all{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--gold);background:var(--gold-soft);color:#3a2e05;border-radius:10px;padding:10px 16px;font-size:.86rem;font-weight:700;cursor:pointer;transition:.14s}
+  .sg-all:hover{background:var(--gold);color:#241c02}
+  .sg-all svg{width:16px;height:16px}
+  .sg-listhint{font-size:.8rem;color:var(--muted);margin:2px 2px 12px}
+  .sg-card{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:10px;box-shadow:var(--shadow-soft)}
+  .sg-card.sg-top{border:1.5px solid var(--gold);box-shadow:0 4px 16px rgba(180,140,30,.14)}
+  .sg-rank{font-family:'Sora','Inter',sans-serif;font-weight:800;font-size:1.05rem;color:var(--navy-800);background:#EEF3F8;border-radius:10px;width:40px;height:40px;display:grid;place-items:center;flex:none}
+  .sg-card.sg-top .sg-rank{background:var(--gold);color:#3a2e05}
   .sg-main{flex:1;min-width:0}
   .sg-cor{font-weight:700;font-size:1rem;color:var(--navy-800)}
   .sg-stats{font-size:.82rem;color:var(--muted);margin-top:2px}
   .sg-stats b{color:var(--navy-800)}
   .sg-reason{font-size:.8rem;color:var(--steel);margin-top:4px}
-  .sg-print{flex:none;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--navy-800);background:var(--navy-800);color:#fff;border-radius:9px;padding:9px 14px;font-size:.82rem;font-weight:700;cursor:pointer;transition:.14s;white-space:nowrap}
+  .sg-print{flex:none;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--navy-800);background:var(--navy-800);color:#fff;border-radius:9px;padding:9px 16px;font-size:.82rem;font-weight:700;cursor:pointer;transition:.14s;white-space:nowrap}
   .sg-print:hover{background:var(--navy-700)}
   .sg-print svg{width:15px;height:15px}
   @media (max-width:560px){
@@ -347,9 +355,9 @@
 
   /* ---------- Ação: Resolver / Resolvido ---------- */
   td.act{text-align:center}
-  .res-btn{border:1px solid var(--navy-700);background:#fff;color:var(--navy-700);border-radius:8px;padding:6px 10px;font-size:.74rem;font-weight:700;transition:.14s;white-space:nowrap}
+  .res-btn{border:1px solid var(--navy-700);background:#fff;color:var(--navy-700);border-radius:8px;padding:6px 8px;font-size:.73rem;font-weight:700;transition:.14s;white-space:nowrap}
   .res-btn:hover{background:var(--navy-800);color:#fff;border-color:var(--navy-800)}
-  .res-done{border:1px solid #bfe2d3;background:var(--ok-bg);color:var(--ok);border-radius:8px;padding:6px 10px;font-size:.74rem;font-weight:700;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer}
+  .res-done{border:1px solid #bfe2d3;background:var(--ok-bg);color:var(--ok);border-radius:8px;padding:6px 8px;font-size:.73rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;cursor:pointer}
   .res-done:hover{background:#d7efe4}
   .res-btn.full,.res-done.full{width:100%;justify-content:center;padding:10px;font-size:.84rem}
   tr.is-resolved td:not(.act){opacity:.55}
@@ -401,8 +409,8 @@
   /* ---------- Funil no cabeçalho ---------- */
   .th-wrap{display:block;width:100%;overflow-wrap:break-word}
   th.num .th-wrap{text-align:right}
-  .hf{position:absolute;top:7px;right:5px;border:none;background:#DDE6EF;color:var(--navy-700);cursor:pointer;border-radius:5px;padding:0;width:17px;height:17px;display:grid;place-items:center;transition:.14s}
-  .hf svg{width:11px;height:11px}
+  .hf{position:absolute;top:7px;right:4px;border:none;background:#DDE6EF;color:var(--navy-700);cursor:pointer;border-radius:5px;padding:0;width:15px;height:15px;display:grid;place-items:center;transition:.14s}
+  .hf svg{width:10px;height:10px}
   thead th:hover .hf{background:var(--steel);color:#fff}
   .hf:hover{background:var(--navy-700)!important;color:#fff}
   .hf.active{background:var(--navy-800);color:#fff;box-shadow:0 0 0 2px rgba(22,69,107,.22)}
@@ -516,7 +524,7 @@
   @media print{
     @page{ size:A4 landscape; margin:11mm 9mm; }
     html,body{background:#fff !important}
-    header,main,.overlay,.drawer,#tipBox{ display:none !important; }
+    header,main,.overlay,.drawer,.modal,.colmenu,.colmenu-back,#tipBox{ display:none !important; }
     #printArea{
       display:block !important;
       font-family:'Inter',Arial,sans-serif; color:#000;
@@ -525,7 +533,8 @@
     #printArea *{ color:#111 !important; box-shadow:none !important; text-shadow:none !important; }
     #printArea .p-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;border-bottom:2.4px solid #000;padding-bottom:9px;margin-bottom:11px}
     #printArea .p-brand{display:flex;gap:11px;align-items:center}
-    #printArea .p-logo{width:36px;height:36px;border:2px solid #000;border-radius:8px;display:grid;place-items:center;font-size:19px;line-height:1}
+    #printArea .p-logo{width:34px;height:34px;border:1.6px solid #000;border-radius:8px;display:grid;place-items:center}
+    #printArea .p-logo svg{width:21px;height:21px}
     #printArea h1{font-family:'Sora','Inter',sans-serif;font-size:17px;margin:0;letter-spacing:-.01em;font-weight:700}
     #printArea .p-brand p{margin:2px 0 0;font-size:10px;color:#444 !important}
     #printArea .p-meta{text-align:right;font-size:10.5px;line-height:1.65;white-space:nowrap}
@@ -648,11 +657,8 @@
         <option value="endereco">Endereço</option>
         <option value="estoque">Estoque disponível</option>
         <option value="reserva">Reserva p/ venda</option>
-        <option value="mediaMes">Média mês</option>
         <option value="mediaDia">Média/dia</option>
-        <option value="ratio">Saída × média</option>
         <option value="cobertura">Cobertura (dias)</option>
-        <option value="sug">Sugestão de compra</option>
       </select>
       <button class="sort-dir" id="sortDirBtn" title="Inverter a ordem">↓ maior</button>
       <button class="sort-dir route-btn" id="routeBtn" title="Agrupar por corredor (roteiro de separação)">🚶 Roteiro por corredor</button>
@@ -673,8 +679,8 @@
       <table>
         <colgroup>
           <col class="c-sit"><col class="c-cod"><col class="c-ref"><col class="c-addr">
-          <col class="c-prod"><col class="c-est"><col class="c-res"><col class="c-mm">
-          <col class="c-md"><col class="c-term"><col class="c-cob"><col class="c-sug"><col class="c-act">
+          <col class="c-prod"><col class="c-est"><col class="c-res">
+          <col class="c-md"><col class="c-cob"><col class="c-act">
         </colgroup>
         <thead>
           <tr>
@@ -686,15 +692,10 @@
             <th><span class="th-wrap"><span>Produto</span><button class="hf" data-col="produto" aria-label="Filtrar e ordenar Produto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
             <th class="num"><span class="th-wrap"><span>Estoque disp.</span><button class="hf" data-col="estoque" aria-label="Filtrar e ordenar Estoque"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
             <th class="num"><span class="th-wrap"><span>Reserva p/ venda</span><button class="hf" data-col="reserva" aria-label="Filtrar e ordenar Reserva"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
-            <th class="num"><span class="th-wrap"><span>Méd. mês</span><button class="hf" data-col="mediaMes" aria-label="Filtrar e ordenar Média mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
             <th class="num"><span class="th-wrap"><span class="th-in">Méd./dia
               <span class="info" tabindex="0">i<span class="tip">Média mensal ÷ <b id="tipDias">22</b> dias úteis. Ex.: 220 ÷ 22 = <b>10/dia</b>.</span></span></span><button class="hf" data-col="mediaDia" aria-label="Filtrar e ordenar Média/dia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
-            <th><span class="th-wrap"><span class="th-in">Saída×méd
-              <span class="info" tabindex="0">i<span class="tip">Quantas vezes a reserva do dia supera a média/dia. A marca branca no meio = <b>1× a média</b>. Passou dela, está saindo acima do normal.</span></span></span><button class="hf" data-col="ratio" aria-label="Filtrar e ordenar Saída x média"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
             <th class="num"><span class="th-wrap"><span class="th-in">Cobertura
               <span class="info" tabindex="0">i<span class="tip">(Estoque disp. − Reserva) ÷ média/dia. Por quantos <b>dias</b> o estoque livre ainda dura no ritmo atual.</span></span></span><button class="hf" data-col="cobertura" aria-label="Filtrar e ordenar Cobertura"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
-            <th class="num"><span class="th-wrap"><span class="th-in">Sugestão
-              <span class="info" tabindex="0">i<span class="tip">Quanto comprar para cobrir <b id="tipAlvo">30</b> dias de venda, já arredondado para o múltiplo de venda (emb). <b>*</b> no emb = vende fracionado.</span></span></span><button class="hf" data-col="sug" aria-label="Filtrar e ordenar Sugestão"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
             <th><span class="th-in">Resolver
               <span class="info" tabindex="0">i<span class="tip">Marque o item como <b>resolvido</b> enquanto trabalha. Grava na <b>coluna D da Página2</b> (com data e quem), fica visível para todos com o link e some/ marca aqui.</span></span></span></th>
           </tr>
@@ -867,10 +868,12 @@
   <div class="modal-head">
     <div>
       <h2>Por onde começar</h2>
-      <p>Ordem sugerida pelos corredores com itens em aberto (críticos e acima da média). Cada sugestão imprime só aquele corredor, na ordem do endereço.</p>
+      <p>Ordem sugerida pelos corredores com itens em aberto. Cada sugestão imprime só aquele corredor, na ordem do endereço.</p>
     </div>
     <button id="closeSuggest" aria-label="Fechar">&times;</button>
   </div>
+  <div class="sg-summary" id="suggestSummary"></div>
+  <div class="sg-actions" id="suggestActions"></div>
   <div class="modal-body" id="suggestBody"></div>
 </div>
 
@@ -948,11 +951,8 @@ const HEADCOLS=[
   {key:"produto",   label:"Produto",        type:"vals"},
   {key:"estoque",   label:"Estoque disp.",  type:"num"},
   {key:"reserva",   label:"Reserva p/ venda",type:"num"},
-  {key:"mediaMes",  label:"Média mês",      type:"num"},
   {key:"mediaDia",  label:"Média/dia",      type:"num"},
-  {key:"ratio",     label:"Saída × média",  type:"num"},
   {key:"cobertura", label:"Cobertura (dias)",type:"num"},
-  {key:"sug",       label:"Sugestão",       type:"num"},
 ];
 const STATUS_LABELS={critico:"Abastecer já",alerta:"Acima da média",ok:"Saudável",neutro:"Sem histórico"};
 let colVals={};    // key -> array de valores marcados (texto). ausente/[] sem marcação = sem filtro
@@ -1371,11 +1371,8 @@ function rowHTML(it,i){
     <td class="prod">${esc(it.produto)||"—"}</td>
     <td class="num tnum">${fmt(it.estoque)}</td>
     <td class="num tnum">${fmt(it.reserva)}</td>
-    <td class="num tnum">${fmt(it.mediaMes)}</td>
     <td class="num tnum">${fmt(it.mediaDia,1)}</td>
-    <td>${thermo(it)}</td>
     <td class="num tnum">${cob}</td>
-    <td class="num"><span class="sug ${sugCls}">${it.sug>0?fmt(it.sug):"—"}</span> <span class="${embCls}">${esc(it.emb.raw)}</span></td>
     <td class="act">${act}</td>
   </tr>`;
 }
@@ -2231,7 +2228,7 @@ function buildPrintReport(opts){
   printArea.innerHTML=`
     <div class="p-head">
       <div class="p-brand">
-        <div class="p-logo">▦</div>
+        <div class="p-logo"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg></div>
         <div>
           <h1>${titulo}</h1>
           <p>Planilha "Armazenamento 1.0" &middot; análise de saída acima da média &middot; reposição inteligente</p>
@@ -2295,25 +2292,38 @@ function corridorSuggestions(){
   });
   return groups;
 }
+function pendingTotals(){
+  const crit=ITEMS.filter(i=>!i.resolvido && i.mediaDia>0 && i.cobertura<cfg.crit);
+  const need=ITEMS.filter(i=>!i.resolvido && ((i.mediaDia>0 && i.cobertura<cfg.crit) || i.sug>0));
+  return {crit,need};
+}
 function openSuggest(){
-  SUGGEST_CACHE=corridorSuggestions().slice(0,3);
+  SUGGEST_CACHE=corridorSuggestions();
   const body=document.getElementById("suggestBody");
+  const sum=document.getElementById("suggestSummary");
+  const act=document.getElementById("suggestActions");
+  const {crit,need}=pendingTotals();
   if(!SUGGEST_CACHE.length){
-    body.innerHTML='<div class="sn-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><div>Nada precisa de ação por corredor agora — nenhum item crítico ou acima da média em aberto. 🎉</div></div>';
+    sum.innerHTML=""; act.innerHTML="";
+    body.innerHTML='<div class="sn-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><div>Nada precisa de reposição agora — nenhum item crítico ou com sugestão de compra em aberto. 🎉</div></div>';
   }else{
-    body.innerHTML=SUGGEST_CACHE.map((g,i)=>{
+    sum.innerHTML=`<span class="sg-sum-n">${fmt(crit.length)}</span> crítico(s) &middot; <span class="sg-sum-n">${fmt(need.length)}</span> item(ns) p/ abastecer &middot; em <span class="sg-sum-n">${SUGGEST_CACHE.length}</span> corredor(es)`;
+    act.innerHTML = crit.length
+      ? `<button class="sg-all" id="sgAllCrit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Imprimir lista completa dos ${fmt(crit.length)} críticos</button>`
+      : "";
+    body.innerHTML=`<div class="sg-listhint">Comece pelo topo (maior risco). Cada corredor imprime em separado:</div>`+SUGGEST_CACHE.map((g,i)=>{
       const tot=g.totalSug>0?`comprar ~<b>${fmt(g.totalSug)}</b> un`:"sem volume estimado";
       const reason = i===0
         ? (g.criticos>0?'Maior risco de ruptura agora — <b>comece por aqui</b>.':'Maior volume a repor — bom ponto de partida.')
-        : 'Próximo na fila pela urgência.';
-      return `<div class="sg-card">
+        : (i===1?'Próximo na fila pela urgência.':'');
+      return `<div class="sg-card${i===0?' sg-top':''}">
         <div class="sg-rank">${i+1}º</div>
         <div class="sg-main">
           <div class="sg-cor">Corredor ${esc(g.corredor)}</div>
           <div class="sg-stats"><b>${g.criticos}</b> crítico(s) &middot; <b>${g.n}</b> item(ns) p/ abastecer &middot; ${tot}</div>
-          <div class="sg-reason">${reason}</div>
+          ${reason?`<div class="sg-reason">${reason}</div>`:""}
         </div>
-        <button class="sg-print" data-sug="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Imprimir sugestão ${i+1}</button>
+        <button class="sg-print" data-sug="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Imprimir</button>
       </div>`;
     }).join("");
   }
@@ -2321,6 +2331,14 @@ function openSuggest(){
   document.getElementById("suggestModal").classList.add("open");
 }
 function closeSuggest(){ document.getElementById("suggestOverlay").classList.remove("open"); document.getElementById("suggestModal").classList.remove("open"); }
+function printAllCriticos(){
+  const {crit}=pendingTotals();
+  if(!crit.length) return;
+  const items=crit.slice().sort((a,b)=> corredorOf(a).localeCompare(corredorOf(b),"pt",{numeric:true,sensitivity:"base"}) || String(a.endereco||"").localeCompare(String(b.endereco||""),"pt",{numeric:true,sensitivity:"base"}));
+  printOverride={ items, titleSuffix:"Lista completa de críticos",
+    chips:[`${items.length} item(ns) crítico(s)`,"todos os corredores","ordem: corredor e endereço"] };
+  buildPrintReport(printOverride); window.print(); setTimeout(()=>{printOverride=null;},600);
+}
 function printSuggestion(idx){
   const g=SUGGEST_CACHE[idx]; if(!g) return;
   const items=g.items.slice().sort((a,b)=>String(a.endereco||"").localeCompare(String(b.endereco||""),"pt",{numeric:true,sensitivity:"base"}));
@@ -2331,6 +2349,7 @@ function printSuggestion(idx){
 document.getElementById("suggestBtn").addEventListener("click",openSuggest);
 document.getElementById("closeSuggest").addEventListener("click",closeSuggest);
 document.getElementById("suggestOverlay").addEventListener("click",closeSuggest);
+document.getElementById("suggestActions").addEventListener("click",e=>{ if(e.target.closest("#sgAllCrit")) printAllCriticos(); });
 document.getElementById("suggestBody").addEventListener("click",e=>{
   const b=e.target.closest("[data-sug]"); if(b) printSuggestion(+b.dataset.sug);
 });
