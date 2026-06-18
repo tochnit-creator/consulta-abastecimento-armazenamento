@@ -155,13 +155,14 @@
 
   /* ---------- Table (desktop) ---------- */
   .table-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden}
-  .tbl-desktop{overflow:visible}
-  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  .tbl-desktop{max-height:74vh;overflow:auto}
+  table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:1240px}
   thead th{
-    background:#F4F7FA;text-align:left;font-size:.65rem;font-weight:700;color:var(--steel);
-    text-transform:uppercase;letter-spacing:.02em;padding:11px 8px;border-bottom:2px solid var(--line-strong);
-    position:sticky;top:0;line-height:1.2;
+    background:#F4F7FA;text-align:left;font-size:.62rem;font-weight:700;color:var(--steel);
+    text-transform:uppercase;letter-spacing:0;padding:11px 22px 11px 8px;border-bottom:2px solid var(--line-strong);
+    position:sticky;top:0;z-index:3;line-height:1.25;white-space:normal;overflow:visible;overflow-wrap:break-word;cursor:pointer;
   }
+  thead th:hover{background:#EAF0F6}
   thead th .th-in{display:inline-flex;align-items:flex-start;gap:4px}
   th.num,td.num{text-align:right}
   tbody td{padding:9px 8px;border-bottom:1px solid var(--line);font-size:.8rem;vertical-align:middle;overflow:hidden}
@@ -173,9 +174,9 @@
   @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   /* larguras fixas p/ caber tudo em uma tela */
-  col.c-sit{width:8.5%}col.c-cod{width:5%}col.c-ref{width:8%}col.c-addr{width:7%}
-  col.c-prod{width:auto}col.c-est{width:5.5%}col.c-res{width:6%}col.c-mm{width:5.5%}
-  col.c-md{width:6%}col.c-term{width:8.5%}col.c-cob{width:6%}col.c-sug{width:8.5%}col.c-act{width:8.5%}
+  col.c-sit{width:7.5%}col.c-cod{width:6%}col.c-ref{width:7.5%}col.c-addr{width:6.5%}
+  col.c-prod{width:auto}col.c-est{width:6%}col.c-res{width:6.5%}col.c-mm{width:6%}
+  col.c-md{width:6%}col.c-term{width:7%}col.c-cob{width:7%}col.c-sug{width:7%}col.c-act{width:7%}
 
   .cod{font-weight:700;color:var(--navy-800);font-variant-numeric:tabular-nums}
   .ref{font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
@@ -380,11 +381,13 @@
   .preset-row button.on{background:var(--navy-800);border-color:var(--navy-800);color:#fff}
 
   /* ---------- Funil no cabeçalho ---------- */
-  .th-wrap{display:inline-flex;align-items:center;gap:6px}
-  th.num .th-wrap{flex-direction:row-reverse}
-  .hf{border:none;background:transparent;color:#9fb0c0;font-size:.82rem;line-height:1;cursor:pointer;border-radius:6px;padding:2px 4px;transition:.14s;flex:none;text-transform:none}
-  .hf:hover{background:#E3EAF1;color:var(--navy-800)}
-  .hf.active{background:var(--navy-800);color:#fff}
+  .th-wrap{display:block;width:100%;overflow-wrap:break-word}
+  th.num .th-wrap{text-align:right}
+  .hf{position:absolute;top:7px;right:5px;border:none;background:#DDE6EF;color:var(--navy-700);cursor:pointer;border-radius:5px;padding:0;width:17px;height:17px;display:grid;place-items:center;transition:.14s}
+  .hf svg{width:11px;height:11px}
+  thead th:hover .hf{background:var(--steel);color:#fff}
+  .hf:hover{background:var(--navy-700)!important;color:#fff}
+  .hf.active{background:var(--navy-800);color:#fff;box-shadow:0 0 0 2px rgba(22,69,107,.22)}
 
   /* ---------- Menu de coluna ---------- */
   .colmenu-back{position:fixed;inset:0;background:rgba(12,28,45,.4);z-index:115;display:none}
@@ -653,23 +656,23 @@
         </colgroup>
         <thead>
           <tr>
-            <th><span class="th-wrap"><span>Situação</span><button class="hf" data-col="status" aria-label="Filtrar e ordenar Situação">▾</button></span></th>
-            <th><span class="th-wrap"><span>Código</span><button class="hf" data-col="codigo" aria-label="Filtrar e ordenar Código">▾</button></span></th>
-            <th><span class="th-wrap"><span>Referência</span><button class="hf" data-col="referencia" aria-label="Filtrar e ordenar Referência">▾</button></span></th>
+            <th><span class="th-wrap"><span>Situação</span><button class="hf" data-col="status" aria-label="Filtrar e ordenar Situação"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
+            <th><span class="th-wrap"><span>Código</span><button class="hf" data-col="codigo" aria-label="Filtrar e ordenar Código"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
+            <th><span class="th-wrap"><span>Referência</span><button class="hf" data-col="referencia" aria-label="Filtrar e ordenar Referência"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
             <th><span class="th-wrap"><span class="th-in">Endereço
-              <span class="info" tabindex="0">i<span class="tip">Endereço do produto no armazém (coluna <b>Armazenamento PPP</b>) &mdash; onde encontrar o item para separação ou reposição.</span></span></span><button class="hf" data-col="endereco" aria-label="Filtrar e ordenar Endereço">▾</button></span></th>
-            <th><span class="th-wrap"><span>Produto</span><button class="hf" data-col="produto" aria-label="Filtrar e ordenar Produto">▾</button></span></th>
-            <th class="num"><span class="th-wrap"><span>Estoque<br>disp.</span><button class="hf" data-col="estoque" aria-label="Filtrar e ordenar Estoque">▾</button></span></th>
-            <th class="num"><span class="th-wrap"><span>Reserva<br>p/ venda</span><button class="hf" data-col="reserva" aria-label="Filtrar e ordenar Reserva">▾</button></span></th>
-            <th class="num"><span class="th-wrap"><span>Média<br>mês</span><button class="hf" data-col="mediaMes" aria-label="Filtrar e ordenar Média mês">▾</button></span></th>
-            <th class="num"><span class="th-wrap"><span class="th-in">Média/dia
-              <span class="info" tabindex="0">i<span class="tip">Média mensal ÷ <b id="tipDias">22</b> dias úteis. Ex.: 220 ÷ 22 = <b>10/dia</b>.</span></span></span><button class="hf" data-col="mediaDia" aria-label="Filtrar e ordenar Média/dia">▾</button></span></th>
-            <th><span class="th-wrap"><span class="th-in">Saída x média
-              <span class="info" tabindex="0">i<span class="tip">Quantas vezes a reserva do dia supera a média/dia. A marca branca no meio = <b>1× a média</b>. Passou dela, está saindo acima do normal.</span></span></span><button class="hf" data-col="ratio" aria-label="Filtrar e ordenar Saída x média">▾</button></span></th>
+              <span class="info" tabindex="0">i<span class="tip">Endereço do produto no armazém (coluna <b>Armazenamento PPP</b>) &mdash; onde encontrar o item para separação ou reposição.</span></span></span><button class="hf" data-col="endereco" aria-label="Filtrar e ordenar Endereço"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
+            <th><span class="th-wrap"><span>Produto</span><button class="hf" data-col="produto" aria-label="Filtrar e ordenar Produto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
+            <th class="num"><span class="th-wrap"><span>Estoque disp.</span><button class="hf" data-col="estoque" aria-label="Filtrar e ordenar Estoque"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
+            <th class="num"><span class="th-wrap"><span>Reserva p/ venda</span><button class="hf" data-col="reserva" aria-label="Filtrar e ordenar Reserva"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
+            <th class="num"><span class="th-wrap"><span>Méd. mês</span><button class="hf" data-col="mediaMes" aria-label="Filtrar e ordenar Média mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
+            <th class="num"><span class="th-wrap"><span class="th-in">Méd./dia
+              <span class="info" tabindex="0">i<span class="tip">Média mensal ÷ <b id="tipDias">22</b> dias úteis. Ex.: 220 ÷ 22 = <b>10/dia</b>.</span></span></span><button class="hf" data-col="mediaDia" aria-label="Filtrar e ordenar Média/dia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
+            <th><span class="th-wrap"><span class="th-in">Saída×méd
+              <span class="info" tabindex="0">i<span class="tip">Quantas vezes a reserva do dia supera a média/dia. A marca branca no meio = <b>1× a média</b>. Passou dela, está saindo acima do normal.</span></span></span><button class="hf" data-col="ratio" aria-label="Filtrar e ordenar Saída x média"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
             <th class="num"><span class="th-wrap"><span class="th-in">Cobertura
-              <span class="info" tabindex="0">i<span class="tip">(Estoque disp. − Reserva) ÷ média/dia. Por quantos <b>dias</b> o estoque livre ainda dura no ritmo atual.</span></span></span><button class="hf" data-col="cobertura" aria-label="Filtrar e ordenar Cobertura">▾</button></span></th>
+              <span class="info" tabindex="0">i<span class="tip">(Estoque disp. − Reserva) ÷ média/dia. Por quantos <b>dias</b> o estoque livre ainda dura no ritmo atual.</span></span></span><button class="hf" data-col="cobertura" aria-label="Filtrar e ordenar Cobertura"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
             <th class="num"><span class="th-wrap"><span class="th-in">Sugestão
-              <span class="info" tabindex="0">i<span class="tip">Quanto comprar para cobrir <b id="tipAlvo">30</b> dias de venda, já arredondado para o múltiplo de venda (emb). <b>*</b> no emb = vende fracionado.</span></span></span><button class="hf" data-col="sug" aria-label="Filtrar e ordenar Sugestão">▾</button></span></th>
+              <span class="info" tabindex="0">i<span class="tip">Quanto comprar para cobrir <b id="tipAlvo">30</b> dias de venda, já arredondado para o múltiplo de venda (emb). <b>*</b> no emb = vende fracionado.</span></span></span><button class="hf" data-col="sug" aria-label="Filtrar e ordenar Sugestão"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></button></span></th>
             <th><span class="th-in">Resolver
               <span class="info" tabindex="0">i<span class="tip">Marque o item como <b>resolvido</b> enquanto trabalha. Grava na <b>coluna D da Página2</b> (com data e quem), fica visível para todos com o link e some/ marca aqui.</span></span></span></th>
           </tr>
@@ -2020,12 +2023,15 @@ document.getElementById("routeBtn").addEventListener("click",()=>{
 
 /* --- funil no cabeçalho + menu de coluna --- */
 (function(){
-  // abre o menu ao clicar no funil
+  // abre o menu ao clicar em qualquer parte do cabeçalho da coluna (exceto no "i")
   document.addEventListener("click",e=>{
-    const hf=e.target.closest(".hf");
-    if(hf){ e.stopPropagation();
-      if(menuKey===hf.dataset.col && colMenu && colMenu.classList.contains("open")){ closeColMenu(); }
-      else openColMenu(hf.dataset.col,hf);
+    const th=e.target.closest("thead th");
+    const hf=th?th.querySelector(".hf"):null;
+    if(th && hf && !e.target.closest(".info")){
+      e.stopPropagation();
+      const key=hf.dataset.col;
+      if(menuKey===key && colMenu && colMenu.classList.contains("open")){ closeColMenu(); }
+      else openColMenu(key,th);
       return;
     }
     // fechar ao clicar fora
@@ -2060,7 +2066,7 @@ document.getElementById("routeBtn").addEventListener("click",()=>{
     if(e.target.closest("[data-clear]")){ clearCol(menuKey); closeColMenu(); return; }
     if(e.target.closest("[data-ok]")){ closeColMenu(); return; }
   });
-  window.addEventListener("resize",()=>{ if(colMenu && colMenu.classList.contains("open") && !menuMobile){ const a=document.querySelector(`.hf[data-col="${menuKey}"]`); positionColMenu(a); } });
+  window.addEventListener("resize",()=>{ if(colMenu && colMenu.classList.contains("open") && !menuMobile){ const hf=document.querySelector(`.hf[data-col="${menuKey}"]`); positionColMenu(hf?hf.closest("th"):null); } });
   const tbl=document.querySelector(".tbl-desktop"); if(tbl) tbl.addEventListener("scroll",()=>{ if(colMenu && colMenu.classList.contains("open") && !menuMobile) closeColMenu(); });
 
   // barra: remover filtro de uma coluna / limpar tudo / abrir seletor no mobile
