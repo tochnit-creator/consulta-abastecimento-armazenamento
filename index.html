@@ -1243,8 +1243,11 @@ const TEXT_KEYS=["produto","endereco","referencia"];
 function corredorOf(it){
   const e=String(it.endereco||"").trim();
   if(!e) return "Sem endereço";
-  const first=e.split(/[.\-\/\s]+/)[0];
-  return first ? first.toUpperCase() : e.toUpperCase();
+  // o corredor é o endereço SEM a última posição (após o último "-" ou espaço):
+  // "1.A03-00" -> "1.A03" · "5.B12-07" -> "5.B12" · "A-01-12" -> "A-01"
+  let c=e.replace(/[\s\-][^\s\-]*$/,"").trim();
+  if(!c) c=e;
+  return c.toUpperCase();
 }
 
 function visibleItems(){
@@ -2273,22 +2276,22 @@ window.addEventListener("beforeprint",()=>buildPrintReport(printOverride)); // c
 /* ============ Sugestões: por qual corredor começar ============ */
 let SUGGEST_CACHE=[];
 function corridorSuggestions(){
-  // itens que precisam de ação: críticos OU acima da média, ainda não resolvidos (adiados já saíram de ITEMS)
-  const need=ITEMS.filter(i=> !i.resolvido && (i.acima || (i.mediaDia>0 && i.cobertura<cfg.crit)));
+  // itens que realmente precisam abastecer: crítico (risco de ruptura) OU com sugestão de compra > 0,
+  // ainda não resolvidos (adiados já saíram de ITEMS)
+  const need=ITEMS.filter(i=> !i.resolvido && ((i.mediaDia>0 && i.cobertura<cfg.crit) || i.sug>0));
   const byC={};
   need.forEach(it=>{ const c=corredorOf(it); (byC[c]=byC[c]||[]).push(it); });
   const groups=Object.keys(byC).map(c=>{
     const items=byC[c];
     const criticos=items.filter(i=>i.mediaDia>0 && i.cobertura<cfg.crit).length;
-    const acima=items.filter(i=>i.acima).length;
     const totalSug=items.reduce((s,i)=>s+(i.sug>0?i.sug:0),0);
     const minCob=Math.min.apply(null,items.map(i=>isFinite(i.cobertura)?i.cobertura:1e9));
-    return {corredor:c, items, criticos, acima, totalSug, minCob, n:items.length};
+    return {corredor:c, items, criticos, totalSug, minCob, n:items.length};
   });
   groups.sort((a,b)=>{
     const an=a.corredor==="Sem endereço"?1:0, bn=b.corredor==="Sem endereço"?1:0;
     if(an!==bn) return an-bn;                       // sem endereço por último
-    return b.criticos-a.criticos || a.minCob-b.minCob || b.n-a.n || b.totalSug-a.totalSug;
+    return b.criticos-a.criticos || a.minCob-b.minCob || b.totalSug-a.totalSug || b.n-a.n;
   });
   return groups;
 }
@@ -2299,15 +2302,15 @@ function openSuggest(){
     body.innerHTML='<div class="sn-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><div>Nada precisa de ação por corredor agora — nenhum item crítico ou acima da média em aberto. 🎉</div></div>';
   }else{
     body.innerHTML=SUGGEST_CACHE.map((g,i)=>{
-      const tot=g.totalSug>0?`comprar ~<b>${fmt(g.totalSug)}</b> un`:"sem sugestão de compra";
+      const tot=g.totalSug>0?`comprar ~<b>${fmt(g.totalSug)}</b> un`:"sem volume estimado";
       const reason = i===0
-        ? (g.criticos>0?'Maior risco de ruptura agora — <b>comece por aqui</b>.':'Mais saídas acima da média — bom ponto de partida.')
+        ? (g.criticos>0?'Maior risco de ruptura agora — <b>comece por aqui</b>.':'Maior volume a repor — bom ponto de partida.')
         : 'Próximo na fila pela urgência.';
       return `<div class="sg-card">
         <div class="sg-rank">${i+1}º</div>
         <div class="sg-main">
           <div class="sg-cor">Corredor ${esc(g.corredor)}</div>
-          <div class="sg-stats"><b>${g.criticos}</b> crítico(s) &middot; <b>${g.acima}</b> acima da média &middot; ${g.n} item(ns) &middot; ${tot}</div>
+          <div class="sg-stats"><b>${g.criticos}</b> crítico(s) &middot; <b>${g.n}</b> item(ns) p/ abastecer &middot; ${tot}</div>
           <div class="sg-reason">${reason}</div>
         </div>
         <button class="sg-print" data-sug="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Imprimir sugestão ${i+1}</button>
@@ -2322,7 +2325,7 @@ function printSuggestion(idx){
   const g=SUGGEST_CACHE[idx]; if(!g) return;
   const items=g.items.slice().sort((a,b)=>String(a.endereco||"").localeCompare(String(b.endereco||""),"pt",{numeric:true,sensitivity:"base"}));
   printOverride={ items, titleSuffix:`Sugestão ${idx+1} · Corredor ${g.corredor}`,
-    chips:[`Sugestão ${idx+1}`,`Corredor ${g.corredor}`,`${g.criticos} crítico(s)`,`${g.acima} acima da média`,"itens que precisam de ação","ordem do corredor (endereço)"] };
+    chips:[`Sugestão ${idx+1}`,`Corredor ${g.corredor}`,`${g.criticos} crítico(s)`,`${g.n} item(ns) p/ abastecer`,"ordem do corredor (endereço)"] };
   buildPrintReport(printOverride); window.print(); setTimeout(()=>{printOverride=null;},600);
 }
 document.getElementById("suggestBtn").addEventListener("click",openSuggest);
