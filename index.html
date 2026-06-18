@@ -1460,9 +1460,10 @@ function renderKPIs(){
   document.getElementById("cCrit").textContent=crit;
   document.getElementById("cOk").textContent=ok;
   document.getElementById("cRes").textContent=ITEMS.filter(i=>i.resolvido).length;
-  document.getElementById("tipCrit").textContent=cfg.crit;
-  document.getElementById("tipDias").textContent=cfg.dias;
-  document.getElementById("tipAlvo").textContent=cfg.alvo;
+  const setTip=(id,v)=>{const el=document.getElementById(id); if(el) el.textContent=v;};
+  setTip("tipCrit",cfg.crit);
+  setTip("tipDias",cfg.dias);
+  setTip("tipAlvo",cfg.alvo);
   // nota de itens ocultos pelas regras de exibição
   const note=document.getElementById("ruleNote");
   const oc=HIDE_RES+HIDE_EST;
