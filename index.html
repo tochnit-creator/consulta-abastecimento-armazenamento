@@ -1645,7 +1645,17 @@ async function confirmAdiar(){
     msg.className="resolve-msg show info"; msg.innerHTML="Enviado. Conferindo na planilha...";
     const ok=await verifyWrite("adiar",codigo);
     if(ok){ msg.className="resolve-msg show ok"; msg.innerHTML=`✓ Confirmado: item adiado por ${dias} dia(s) úteis (gravado na Página2).`; setTimeout(()=>{ closeAdiar(); refresh(); },1100); }
-    else  { msg.className="resolve-msg show err"; msg.innerHTML="⚠ Enviei, mas <b>não confirmei na planilha</b>. Pode ser atraso do Google ou o app não gravou. Feche e clique em <b>Atualizar</b>; se não aparecer, confira em Config se você republicou a <b>nova versão</b> do script (a opção 'adiar' exige o script atualizado)."; }
+    else {
+      // diagnóstico: se gravou na coluna D (resolvido) em vez de B/C, é o script ANTIGO ainda ativo
+      const sn=await fetchSnooze();
+      const gravouD = sn && lookupResolved(sn.resolved,codigo);
+      msg.className="resolve-msg show err";
+      if(gravouD){
+        msg.innerHTML="⚠ O script gravou na <b>coluna D</b> (resolvido) em vez de B/C &mdash; sinal de que a <b>versão antiga</b> ainda está no ar. Republique a <b>nova versão</b>: Apps Script &rsaquo; <b>Implantar &rsaquo; Gerenciar implantações &rsaquo; editar (lápis) &rsaquo; Nova versão</b> (mantém a mesma URL). Depois apague o que foi gravado em D nessa linha.";
+      } else {
+        msg.innerHTML="⚠ Enviei, mas <b>não confirmei na planilha</b>. Pode ser atraso do Google &mdash; feche e clique em <b>Atualizar</b> em instantes. Se persistir, confira em Config se a URL do app está certa e se você republicou a <b>nova versão</b> do script.";
+      }
+    }
   }catch(err){ msg.className="resolve-msg show err"; msg.innerHTML="Falha ao enviar. Confira o link do app e a conexão."; }
   finally{ okBtn.disabled=false; okBtn.textContent="⏰ Adiar"; }
 }
